@@ -21,6 +21,7 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 - `assets/js/decoder.js` — XLNF backronym list + random pick + re-roll on click/Enter
 - `assets/js/theme.js` — dark/light toggle with `localStorage` persistence
 - `assets/js/contact.js` — AJAX submit of `#contact-form` to Formspree (endpoint `mrerljne`); includes honeypot
+- `assets/js/guild.js` — hidden dev-guild signup. Section `#guild` revealed when URL hash is `#guild`; AJAX submit to Formspree (endpoint `xkokzezl`)
 - `assets/js/scroll-top.js` — fixed "↑ top" button, appears after 400px scroll, smooth-scrolls to top
 - `assets/js/analytics.js` — `window.xlnfTrack(name, props)` wrapper over PostHog. Init is inlined in `index.html` `<head>`. EU Cloud, cookieless (`persistence: "memory"`), autocapture off, session recording off. Tracked events: `decoder_reroll`, `theme_toggle`, `contact_submit` (+ automatic pageview).
 - `assets/fonts/` — JetBrains Mono (self-hosted)

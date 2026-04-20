@@ -177,9 +177,11 @@
   <script defer src="assets/js/decoder.js"></script>
   <script defer src="assets/js/theme.js"></script>
   <script defer src="assets/js/contact.js"></script>
+  <script defer src="assets/js/guild.js"></script>
   <script defer src="assets/js/scroll-top.js"></script>
 </head>
 <body>
+  <!-- devs reading source: we have a guild. say hi → #guild -->
   <a class="skip-link" href="#main">skip to content</a>
   <header class="site-header">
     <div class="container">
@@ -213,7 +215,7 @@
         <p>Turns coffee into commits and commits into questionable business decisions. Based in a terminal, occasionally in Chisinau.</p>
         <p>
           <a href="https://github.com/mihai-valentin">github.com/mihai-valentin</a> ·
-          <a href="mailto:hello@xlnf.dev">hello@xlnf.dev</a>
+          <a href="mailto:mihaivalentin373@gmail.com">mihaivalentin373@gmail.com</a>
         </p>
       </div>
 
@@ -243,6 +245,30 @@
           <span id="contact-status" class="form-status" aria-live="polite"></span>
         </div>
       </form>
+
+      <section id="guild" hidden aria-hidden="true">
+        <h2 class="section">guild</h2>
+        <p>access: restricted. devs only. drop your email and (optionally) a GitHub handle — we'll reach out when the doors open.</p>
+
+        <form id="guild-form" class="contact-form" novalidate>
+          <label>
+            <span class="field-label">$ email</span>
+            <input type="email" name="email" autocomplete="email" required placeholder="handle@domain.tld">
+          </label>
+
+          <label>
+            <span class="field-label">$ github (optional)</span>
+            <input type="url" name="github" autocomplete="url" placeholder="https://github.com/your-handle">
+          </label>
+
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="gotcha" aria-hidden="true">
+
+          <div class="form-actions">
+            <button type="submit" id="guild-submit">enlist()</button>
+            <span id="guild-status" class="form-status" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
     </div>
   </main>
 
