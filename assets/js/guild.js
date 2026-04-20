@@ -1,6 +1,5 @@
 // XLNF — guild.js
-// Hidden dev-guild signup. Section is revealed when location.hash === "#guild"
-// (shareable, invisible to casual visitors). POSTs to Formspree on submit.
+// Secondary form module. Section #guild is revealed when location.hash === "#guild".
 
 (function () {
   "use strict";

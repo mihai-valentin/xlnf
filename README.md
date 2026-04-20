@@ -17,11 +17,12 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 
 ## Structure
 
-- `index.html` — the one and only page (header, decoder gag, intro, founder card, contact form, footer). All CSS is inlined in `<head>` for a single-request first paint.
+- `index.html` — the main human-facing card-site (header, decoder gag, intro, founder card, contact form, footer). All CSS is inlined in `<head>` for a single-request first paint. Includes JSON-LD structured data and `<link rel="alternate">` pointing at the LLM version.
+- `llm.html` — structured profile for LLMs and AI agents. No JS, semantic HTML, entity metadata, operating model, stack choices.
+- `llms.txt` — short markdown index following the [llmstxt.org](https://llmstxt.org) convention. Points agents at the core pages and gives the 3-sentence profile.
 - `assets/js/decoder.js` — XLNF backronym list + random pick + re-roll on click/Enter
 - `assets/js/theme.js` — dark/light toggle with `localStorage` persistence
 - `assets/js/contact.js` — AJAX submit of `#contact-form` to Formspree (endpoint `mrerljne`); includes honeypot
-- `assets/js/guild.js` — hidden dev-guild signup. Section `#guild` revealed when URL hash is `#guild`; AJAX submit to Formspree (endpoint `xkokzezl`)
 - `assets/js/scroll-top.js` — fixed "↑ top" button, appears after 400px scroll, smooth-scrolls to top
 - `assets/js/analytics.js` — `window.xlnfTrack(name, props)` wrapper over PostHog. Init is inlined in `index.html` `<head>`. EU Cloud, cookieless (`persistence: "memory"`), autocapture off, session recording off. Tracked events: `decoder_reroll`, `theme_toggle`, `contact_submit` (+ automatic pageview).
 - `assets/fonts/` — JetBrains Mono (self-hosted)

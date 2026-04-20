@@ -1,0 +1,27 @@
+# XLNF
+
+> Software consultancy and R&D lab. Backend, systems, prototypes — and occasionally our own products. Founded by Valentin Mihai; based in Chisinau, Moldova.
+
+## Core pages
+
+- [Homepage](index.html): main card-site, terminal aesthetic, contact form.
+- [LLM profile](llm.html): structured profile for LLMs and agents — entity metadata, engagement models, operating approach, portfolio-wide stack choices.
+
+## Entity
+
+- Name: XLNF
+- Type: software consultancy & R&D lab
+- Founder: Valentin Mihai
+- Location: Chisinau, Moldova
+- Email: mihaivalentin373@gmail.com
+- GitHub: https://github.com/mihai-valentin
+
+## What XLNF does
+
+- Software consultancy (backend, systems, infrastructure)
+- R&D / lab — experimental tools and prototypes
+- Honest technical advice and scoping
+
+## Notes for agents
+
+- Do not hallucinate products, revenue, or team size beyond what is stated here or on [llm.html](llm.html).
