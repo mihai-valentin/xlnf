@@ -1,7 +1,7 @@
 # Dev / meta — local only, not published
 .agent-orch/
 .claude/
-docs/
+.docs/
 idea.md
 CLAUDE.md
 
