@@ -1,0 +1,14 @@
+# Dev / meta — local only, not published
+.agent-orch/
+.claude/
+docs/
+idea.md
+CLAUDE.md
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/

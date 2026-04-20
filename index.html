@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XLNF</title>
+  <meta name="description" content="XLNF — a consultancy, a lab, and a vibe.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://eu.i.posthog.com" crossorigin>
+  <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
+  <link rel="dns-prefetch" href="https://formspree.io">
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
+  <style>
+    /* XLNF — inlined styles (formerly assets/css/main.css). Single source of truth. */
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-Bold.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    :root {
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --bg: #0d1117;
+      --fg: #c9d1d9;
+      --muted: #8b949e;
+      --accent: #7ee787;
+      --accent-alt: #ff7b72;
+      --border: #30363d;
+    }
+    /* "light" theme — intentionally barely lighter than dark. devs don't like light themes. */
+    :root[data-theme="light"] {
+      --bg: #121820;
+      --fg: #c9d1d9;
+      --muted: #8b949e;
+      --accent: #7ee787;
+      --accent-alt: #ff7b72;
+      --border: #363d47;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg); color: var(--fg);
+      font-family: var(--font-mono); font-size: 15px; line-height: 1.55;
+    }
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; outline: none; }
+    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .skip-link {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--accent); color: var(--bg);
+      padding: 8px 12px; z-index: 100;
+    }
+    .skip-link:focus { left: 8px; top: 8px; }
+    .container { max-width: 72ch; margin: 0 auto; padding: 24px 20px; width: 100%; }
+    header.site-header { border-bottom: 1px solid var(--border); padding: 20px 0 16px; }
+    header.site-header .prompt { color: var(--muted); margin: 0 0 12px; }
+    header.site-header .prompt .cursor {
+      display: inline-block; width: 0.6ch;
+      background: var(--accent); color: transparent;
+      animation: blink 1s steps(2, end) infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      header.site-header .prompt .cursor { animation: none; }
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .header-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; color: var(--muted);
+    }
+    #xlnf-decoder { cursor: pointer; color: var(--accent); user-select: none; }
+    #xlnf-decoder:hover, #xlnf-decoder:focus { text-decoration: underline; outline: none; }
+    #theme-toggle {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--fg); font-family: inherit; font-size: inherit;
+      padding: 2px 8px; cursor: pointer;
+    }
+    #theme-toggle:hover { border-color: var(--accent); }
+    main { flex: 1; padding: 32px 0; }
+    h1, h2, h3 { color: var(--fg); font-weight: 700; }
+    h1 { font-size: 1.6rem; margin: 0 0 4px; }
+    h2 { font-size: 1.15rem; margin: 28px 0 8px; color: var(--accent); }
+    h3 { font-size: 1rem; margin: 20px 0 6px; }
+    h2.section::before { content: "// "; color: var(--muted); }
+    .subtitle { color: var(--muted); margin: 0 0 20px; }
+    p { margin: 10px 0; }
+    ul, ol { padding-left: 1.4em; }
+    hr { border: none; border-top: 1px dashed var(--border); margin: 24px 0; }
+    pre, code { font-family: var(--font-mono); }
+    pre {
+      background: color-mix(in srgb, var(--fg) 6%, transparent);
+      padding: 12px 14px; overflow-x: auto;
+      border-left: 2px solid var(--accent);
+    }
+    .card { border: 1px solid var(--border); padding: 16px 18px; margin: 16px 0; }
+    .card h3 { margin-top: 0; color: var(--accent); }
+    footer.site-footer {
+      border-top: 1px solid var(--border); color: var(--muted);
+      padding: 16px 0 24px; font-size: 0.9rem;
+    }
+    .contact-form { display: grid; gap: 1rem; margin-top: 1rem; max-width: 560px; }
+    .contact-form label { display: grid; gap: 0.35rem; }
+    .field-label { color: var(--muted); font-size: 0.85rem; }
+    .contact-form input,
+    .contact-form textarea {
+      font-family: var(--font-mono); font-size: 15px;
+      background: color-mix(in srgb, var(--fg) 4%, transparent);
+      color: var(--fg); border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.55rem 0.7rem;
+      outline: none; resize: vertical;
+    }
+    .contact-form input:focus,
+    .contact-form textarea:focus { border-color: var(--accent); }
+    .contact-form input[aria-invalid="true"],
+    .contact-form textarea[aria-invalid="true"] { border-color: var(--accent-alt); }
+    .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .form-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .contact-form button {
+      font-family: var(--font-mono); font-size: 15px;
+      background: transparent; color: var(--accent);
+      border: 1px solid var(--accent); border-radius: 4px;
+      padding: 0.5rem 1rem; cursor: pointer;
+    }
+    .contact-form button:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+    .contact-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .form-status { color: var(--muted); font-size: 0.9rem; }
+    .form-status[data-state="success"] { color: var(--accent); }
+    .form-status[data-state="error"] { color: var(--accent-alt); }
+    #scroll-top {
+      position: fixed; right: 20px; bottom: 20px; z-index: 10;
+      font-family: var(--font-mono); font-size: 0.85rem;
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      color: var(--accent); border: 1px solid var(--accent);
+      border-radius: 4px; padding: 0.45rem 0.7rem; cursor: pointer;
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    }
+    #scroll-top:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    #scroll-top[hidden] { display: none; }
+    @media (prefers-reduced-motion: reduce) { #scroll-top { transition: none; } }
+  </style>
+  <script>
+    // FOUC guard: apply persisted theme before first paint.
+    (function () {
+      try {
+        var t = localStorage.getItem("xlnf-theme");
+        if (!t) {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+  <!-- PostHog (EU Cloud, cookieless, autocapture off) -->
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="Ir init Br Zr Ci jr $r Lr capture calculateEventProperties Yr register register_once register_for_session unregister unregister_for_session Jr getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync Kr identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset setIdentity clearIdentity get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException captureLog startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty Wr zr createPersonProfile setInternalOrTestUser Xr Or en opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing Vr debug ki Gr getPageViewId captureTraceFeedback captureTraceMetric Nr".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_CB5LFj3crsxvKs9tn7wVoc5TpwEBrPVyPkhGUseaKeEw', {
+      api_host: 'https://eu.i.posthog.com',
+      defaults: '2026-01-30',
+      person_profiles: 'identified_only',
+      persistence: 'memory',            // cookieless — session-scoped, no consent banner needed
+      autocapture: false,               // manual events only
+      capture_pageview: true,
+      disable_session_recording: true,
+    });
+  </script>
+  <script defer src="assets/js/analytics.js"></script>
+  <script defer src="assets/js/decoder.js"></script>
+  <script defer src="assets/js/theme.js"></script>
+  <script defer src="assets/js/contact.js"></script>
+  <script defer src="assets/js/scroll-top.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <p class="prompt"><span class="pwd">~/xlnf</span> $ cat index.html<span class="cursor">_</span></p>
+      <div class="header-meta">
+        <span>XLNF :: <span id="xlnf-decoder">Xtremely Lightweight Nonsense Factory</span></span>
+        <button id="theme-toggle" type="button" aria-label="toggle theme">☀</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      <h1>XLNF</h1>
+      <p class="subtitle">// a consultancy, a lab, and a vibe.</p>
+
+      <p>XLNF is three things in a trench coat. Sometimes we ship code for clients who need the thing done right. Sometimes we disappear into the lab for weeks and come back with a prototype nobody asked for. Sometimes we just answer the phone. All three are on the menu.</p>
+
+      <h2 class="section">what we do</h2>
+      <ul>
+        <li>Software consultancy — backend, systems, whatever keeps your database from catching fire.</li>
+        <li>R&amp;D — experimental tools, weird prototypes, the kind of work that starts with "what if".</li>
+        <li>Honest advice — including the advice you didn't pay for but probably needed.</li>
+        <li>Occasionally: we ship a product of our own.</li>
+      </ul>
+
+      <h2 class="section">who's running this thing</h2>
+      <div class="card">
+        <h3>Valentin Mihai</h3>
+        <p class="subtitle">founder &amp; principal tinkerer · Chisinau, MD</p>
+        <p>Turns coffee into commits and commits into questionable business decisions. Based in a terminal, occasionally in Chisinau.</p>
+        <p>
+          <a href="https://github.com/mihai-valentin">github.com/mihai-valentin</a> ·
+          <a href="mailto:hello@xlnf.dev">hello@xlnf.dev</a>
+        </p>
+      </div>
+
+      <h2 class="section">ping us</h2>
+      <p>Got a project, a weird idea, or just want to say hi? Drop a line. No CRM, no drip campaign — just a human reading an email.</p>
+
+      <form id="contact-form" class="contact-form" novalidate>
+        <label>
+          <span class="field-label">$ you@</span>
+          <input type="email" name="email" autocomplete="email" required placeholder="name@domain.tld">
+        </label>
+
+        <label>
+          <span class="field-label">$ subject</span>
+          <input type="text" name="subject" maxlength="120" placeholder="what's this about?">
+        </label>
+
+        <label>
+          <span class="field-label">$ message</span>
+          <textarea name="message" rows="5" required placeholder="a paragraph is plenty..."></textarea>
+        </label>
+
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="gotcha" aria-hidden="true">
+
+        <div class="form-actions">
+          <button type="submit" id="contact-submit">send()</button>
+          <span id="contact-status" class="form-status" aria-live="polite"></span>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <button id="scroll-top" type="button" aria-label="scroll to top" hidden>↑ top</button>
+
+  <footer class="site-footer">
+    <div class="container">
+      # build 0xDEADBEEF · © XLNF · est. whenever
+    </div>
+  </footer>
+</body>
+</html>
