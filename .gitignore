@@ -4,6 +4,7 @@
 .docs/
 idea.md
 CLAUDE.md
+AGENTS.md
 
 # OS / editor noise
 .DS_Store
