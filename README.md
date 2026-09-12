@@ -13,7 +13,26 @@ python3 -m http.server 8000
 
 ## Deploy
 
-Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jekyll so `assets/` paths work as-is.
+**Live at [xlnf.dev](https://xlnf.dev/), on DigitalOcean App Platform's free static-site tier. Every push to `main` redeploys.**
+
+The spec is committed at [`.do/app.yaml`](.do/app.yaml): static site, no build command, repo root served as-is, `deploy_on_push: true` on `main`. App Platform reads that file when an app is created from this repo; after that, changes are applied with `doctl apps update <app-id> --spec .do/app.yaml`.
+
+### First-time setup (done once, in DigitalOcean)
+
+1. Create an app from this repository and let it pick up `.do/app.yaml`. Authorise the GitHub app so `deploy_on_push` can fire.
+2. Add `xlnf.dev` as a custom domain. App Platform gives you a `<something>.ondigitalocean.app` hostname and provisions a Let's Encrypt certificate.
+
+### DNS, in Cloudflare
+
+- `CNAME xlnf.dev -> <app>.ondigitalocean.app`. Cloudflare's CNAME flattening makes a CNAME at the apex legal, so no ALIAS/A record juggling is needed.
+- **Leave the record DNS-only (grey cloud) until the certificate is issued.** With the orange cloud on, Cloudflare terminates TLS itself and can intercept the ACME challenge, so App Platform's certificate never validates and the domain sits in a pending state. Turn the proxy on afterwards if you want it, with SSL mode **Full (strict)** — anything less gives you a Cloudflare-to-origin leg that isn't verified.
+- `www` is handled by a Cloudflare redirect rule to the apex, not by a second App Platform domain, so only one hostname ever serves the content.
+
+### Leaving GitHub Pages
+
+Pages still serves the old content from the **`master`** branch, which is deliberately left behind at the last pre-migration commit. `main` is the live branch now. Once `xlnf.dev` is verified working, disable Pages in the repository settings and delete `master`, otherwise the same pages stay reachable on two hostnames. Every canonical URL already points at `xlnf.dev`, so search engines consolidate on the right one in the meantime.
+
+`.nojekyll` is vestigial on App Platform — it only ever mattered to Pages. Keep it until `master` is gone.
 
 ## Structure
 
@@ -22,7 +41,7 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 - `llms.txt` — short markdown index following the [llmstxt.org](https://llmstxt.org) convention. Points agents at the core pages and gives the 3-sentence profile.
 - `notes/` — the notes layer: technical write-ups, built for search discoverability. `notes/index.html` is the listing; each note is `notes/<slug>/index.html` so the URL is a clean `/notes/<slug>/` with no server config. See [Adding a note](#adding-a-note).
 - `sitemap.xml` — hand-maintained; **every new page needs an entry**. There is no build step to generate it.
-- `robots.txt` — present for intent, but see the caveat under [SEO](#seo).
+- `robots.txt` — served at the domain root, so it is actually read; carries the `Sitemap:` pointer. See [SEO](#seo).
 - `check-notes.py` — dev-time consistency check for the notes layer; not served, not part of a build. Run it after adding a note.
 - `assets/js/decoder.js` — XLNF backronym list + random pick + re-roll on click/Enter
 - `assets/js/theme.js` — dark/light toggle with `localStorage` persistence
@@ -83,9 +102,13 @@ The alternative, if the no-storage posture ever needs restoring, is `cookieless_
 
 What is in place: per-page titles and descriptions, canonical URLs, Open Graph and Twitter cards, JSON-LD (`Organization` on the homepage, `Blog` on the notes index, `TechArticle` + breadcrumbs per note), a sitemap, and internal links in both directions between homepage, index and notes.
 
-**The robots.txt caveat.** This is a *project* Pages site served from `/xlnf/`, so `robots.txt` only has authority at the domain root — `https://mihai-valentin.github.io/robots.txt` — which belongs to a `mihai-valentin.github.io` repo that does not currently exist. Crawlers will therefore never read `/xlnf/robots.txt`, and will never discover the `Sitemap:` line in it. Nothing is blocked (an absent robots.txt means crawl freely), but **the sitemap has to be submitted by hand** in Google Search Console and Bing Webmaster Tools. The file is kept as a statement of intent and so it is already correct if a user-level Pages repo ever appears.
+`robots.txt` works properly now. On the old project-Pages URL the site lived under `/xlnf/`, where `robots.txt` has no authority — only the domain root does — so crawlers never read it and never saw its `Sitemap:` line, and the sitemap had to be submitted by hand. On `xlnf.dev` the file sits at the root of its own domain, so it is read and the sitemap is discoverable on its own.
 
-Canonical URLs are absolute and hardcoded to `mihai-valentin.github.io/xlnf`. Moving to a custom domain means updating them in every page, plus `sitemap.xml`.
+Still worth doing once: add `xlnf.dev` as a property in Google Search Console and Bing Webmaster Tools and submit `https://xlnf.dev/sitemap.xml` directly. Discovery works without it now; submitting just makes indexing faster and gives you the coverage reports.
+
+Canonical URLs are absolute and hardcoded to `https://xlnf.dev`. Changing domain again means a find-and-replace across every page plus `sitemap.xml`, `robots.txt`, `llms.txt`, `llm.html` and the `BASE` constant in `check-notes.py` — 72 occurrences last time.
+
+**While `master` still exists**, GitHub Pages serves a copy of the site on `mihai-valentin.github.io/xlnf`. The canonicals there point at `xlnf.dev`, which is what you want, but the duplicate only fully goes away when Pages is switched off.
 
 ## License
 

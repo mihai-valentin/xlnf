@@ -1,0 +1,49 @@
+# DigitalOcean App Platform — App Spec for the XLNF site.
+#
+# Static site, no build step: the repo root is served as-is. App Platform reads
+# this file when an app is created from this repository; afterwards, apply
+# changes with:
+#
+#   doctl apps update <app-id> --spec .do/app.yaml
+#
+# To see the live spec (useful when this file and reality disagree):
+#
+#   doctl apps spec get <app-id>
+
+name: xlnf
+region: fra # Frankfurt — closest region to the audience and the founder
+
+static_sites:
+  - name: site
+
+    github:
+      repo: mihai-valentin/xlnf
+      branch: main
+      deploy_on_push: true # every push to main redeploys
+
+    # No build command, so there is no build output directory: App Platform
+    # serves source_dir directly. Do not add output_dir unless a build is added.
+    source_dir: /
+
+    index_document: index.html
+
+    # error_document: 404.html
+    #   Commented out because no 404.html exists yet — pointing at a missing
+    #   file is worse than App Platform's default error page. Add the file
+    #   first, then uncomment.
+    #
+    # Deliberately NOT setting catchall_document. That rewrites every unmatched
+    # path to one document and returns HTTP 200, which is right for a
+    # client-routed SPA and actively harmful here: a typo'd /notes/ URL would
+    # return 200 with the wrong content, and search engines would index the
+    # duplicate instead of treating it as missing.
+
+domains:
+  - domain: xlnf.dev
+    type: PRIMARY
+    # zone is intentionally omitted: DNS is managed in Cloudflare, not
+    # DigitalOcean. Setting `zone` makes App Platform try to manage records in
+    # a DO-hosted zone that does not exist here.
+    #
+    # www is handled by a Cloudflare redirect rule to the apex rather than
+    # being added here, so only one hostname ever serves the content.

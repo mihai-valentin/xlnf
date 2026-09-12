@@ -25,7 +25,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-BASE = "https://mihai-valentin.github.io/xlnf"
+BASE = "https://xlnf.dev"
 
 problems = []
 
