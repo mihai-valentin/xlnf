@@ -29,6 +29,7 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 - `assets/js/contact.js` — AJAX submit of `#contact-form` to Formspree (endpoint `mrerljne`); includes honeypot
 - `assets/js/scroll-top.js` — fixed "↑ top" button, appears after 400px scroll, smooth-scrolls to top
 - `assets/js/analytics.js` — `window.xlnfTrack(name, props)` wrapper over PostHog. Init is inlined in `index.html` `<head>`. EU Cloud, cookieless (`persistence: "memory"`), autocapture off, session recording off. Tracked events: `decoder_reroll`, `theme_toggle`, `contact_submit` (+ automatic pageview).
+- `assets/js/notes.js` — notes analytics: `note_view`, `note_read` (75% scroll depth) and `notes_index_view`. See [Analytics](#analytics).
 - `assets/js/posthog.js` — the PostHog init, for pages that don't inline it. `index.html` keeps its own inlined copy so its pageview fires before first paint; notes load this deferred instead. **Two copies of the same config — change both.**
 - `assets/css/notes.css` — shared stylesheet for `notes/`. The design tokens are duplicated from `index.html`'s inlined block, deliberately: inlining is what keeps the landing page a single request, and one shared file is what keeps N notes from drifting apart. Change tokens in both.
 - `assets/fonts/` — JetBrains Mono (self-hosted)
@@ -43,6 +44,30 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 6. Preview locally, then check the rendered page with Google's Rich Results Test before announcing it anywhere.
 
 Write original prose. Do not paste a project's README into a note: two copies of the same text on two domains compete with each other, and the note should be the *story* — what broke, what the wrong theories were, why the real cause is what it is — with the repo holding the instructions.
+
+## Analytics
+
+PostHog EU Cloud, cookieless, autocapture and session recording off. Pageviews are automatic (`capture_pageview: true`); everything else is an explicit `window.xlnfTrack(name, props)` call.
+
+| Event | Fired when | Properties |
+|---|---|---|
+| `decoder_reroll` | the backronym is re-rolled | — |
+| `theme_toggle` | theme switched | `to` |
+| `contact_submit` | contact form submitted | — |
+| `guild_revealed` / `guild_join` | hidden guild form revealed / submitted | — |
+| `notes_index_view` | `/notes/` opened | `notes` (count) |
+| `note_view` | a note page opened | `slug`, `title` |
+| `note_read` | reader reached 75% of a note | `slug`, `title` |
+
+`note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.
+
+**Known limitation — `persistence: "memory"`.** Storage is session-scoped and nothing is written to the browser, which is what avoids needing a consent banner. PostHog itself warns about the cost at init:
+
+> persistence is set to 'memory' but no bootstrap.distinctID was provided. PostHog will mint a new distinct ID on every page load.
+
+So **a new distinct ID is minted per page load**. Consequences worth knowing before reading any dashboard: unique visitors is meaningless (it equals pageviews), and there is no session stitching — you cannot see one reader going note → note → homepage → contact. Per-note view and read counts are still accurate, which is what the notes layer is actually measured on.
+
+Changing this means choosing persistent storage, which changes the site's privacy posture and likely requires a consent mechanism. It is a deliberate trade, not an oversight — don't "fix" it without deciding that question first.
 
 ## SEO
 
