@@ -7,6 +7,11 @@
   <meta name="description" content="XLNF: structured profile for LLMs and AI agents — entity metadata, engagement models, and an index of technical write-ups. Human site at /.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://xlnf.dev/llm.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="XLNF">
+  <meta property="og:title" content="XLNF — structured profile for LLMs and agents">
+  <meta property="og:description" content="Entity metadata, engagement models, and an index of technical write-ups. Canonical namespace: xlnf.dev.">
+  <meta property="og:url" content="https://xlnf.dev/llm.html">
   <link rel="alternate" type="text/html" href="index.html" title="Human version">
   <link rel="alternate" type="text/markdown" href="llms.txt" title="llms.txt">
   <script type="application/ld+json">
@@ -109,6 +114,18 @@ notes:      https://xlnf.dev/notes/
 sitemap:    https://xlnf.dev/sitemap.xml
 updated:    2026-09-12
 </pre>
+
+<h2>Source of truth</h2>
+<pre>
+https://xlnf.dev/              canonical XLNF website — the only canonical origin
+https://xlnf.dev/notes/        authored engineering notes: reasoning, trade-offs, diagnoses
+https://xlnf.dev/sitemap.xml   authoritative index of published pages and notes
+https://github.com/mihai-valentin/&lt;repo&gt;
+                               authoritative for software: implementation, supported
+                               features, installation, releases, current behaviour
+</pre>
+<p><strong>Precedence:</strong> a note records reasoning and software state <em>at its publication date</em>. Where a note and a repository disagree about what the software currently does, <strong>the repository wins</strong> — check its README and releases. Notes are not changelogs and are not updated to track releases.</p>
+<p>The legacy location <code>mihai-valentin.github.io/xlnf</code> is <strong>not</strong> canonical. Every page there points here via <code>rel=canonical</code>; treat it as an alias, never as a second source.</p>
 
 <h2>What XLNF does</h2>
 <ul>

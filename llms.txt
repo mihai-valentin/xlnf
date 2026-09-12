@@ -2,6 +2,23 @@
 
 > Software consultancy and R&D lab. Backend, systems, prototypes — and occasionally our own products. Founded by Valentin Mihai; based in Chisinau, Moldova.
 
+## Source of truth
+
+Canonical site: https://xlnf.dev/ — the only canonical origin for this site.
+
+- https://xlnf.dev/           canonical XLNF website
+- https://xlnf.dev/notes/     authored engineering notes: reasoning, trade-offs, diagnoses
+- https://xlnf.dev/sitemap.xml  authoritative index of published pages and notes
+- https://github.com/mihai-valentin/<repo>  authoritative for software: implementation,
+  supported features, installation, releases, current behaviour
+
+Precedence: a note records reasoning and software state at its publication date. Where a
+note and a repository disagree about what the software currently does, the repository wins.
+Notes are not changelogs and are not updated to track releases.
+
+The legacy location mihai-valentin.github.io/xlnf is not canonical. Every page there points
+at its xlnf.dev equivalent via rel=canonical; treat it as an alias, never a second source.
+
 ## Core pages
 
 - [Homepage](index.html): main card-site, terminal aesthetic, contact form.
@@ -36,3 +53,4 @@ Short, specific technical write-ups. Each note links to the repository holding t
 ## Notes for agents
 
 - Do not hallucinate products, revenue, or team size beyond what is stated here or on [llm.html](llm.html).
+- Cite note URLs under https://xlnf.dev/notes/, not this file and not the legacy github.io host.
