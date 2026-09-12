@@ -28,7 +28,7 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 - `assets/js/theme.js` — dark/light toggle with `localStorage` persistence
 - `assets/js/contact.js` — AJAX submit of `#contact-form` to Formspree (endpoint `mrerljne`); includes honeypot
 - `assets/js/scroll-top.js` — fixed "↑ top" button, appears after 400px scroll, smooth-scrolls to top
-- `assets/js/analytics.js` — `window.xlnfTrack(name, props)` wrapper over PostHog. Init is inlined in `index.html` `<head>`. EU Cloud, cookieless (`persistence: "memory"`), autocapture off, session recording off. Tracked events: `decoder_reroll`, `theme_toggle`, `contact_submit` (+ automatic pageview).
+- `assets/js/analytics.js` — `window.xlnfTrack(name, props)` wrapper over PostHog. Init is inlined in `index.html` `<head>`. EU Cloud, no cookies, `persistence: "sessionStorage"`, autocapture off, session recording off. Tracked events: `decoder_reroll`, `theme_toggle`, `contact_submit` (+ automatic pageview).
 - `assets/js/notes.js` — notes analytics: `note_view`, `note_read` (75% scroll depth) and `notes_index_view`. See [Analytics](#analytics).
 - `assets/js/posthog.js` — the PostHog init, for pages that don't inline it. `index.html` keeps its own inlined copy so its pageview fires before first paint; notes load this deferred instead. **Two copies of the same config — change both.**
 - `assets/css/notes.css` — shared stylesheet for `notes/`. The design tokens are duplicated from `index.html`'s inlined block, deliberately: inlining is what keeps the landing page a single request, and one shared file is what keeps N notes from drifting apart. Change tokens in both.
@@ -47,7 +47,7 @@ Write original prose. Do not paste a project's README into a note: two copies of
 
 ## Analytics
 
-PostHog EU Cloud, cookieless, autocapture and session recording off. Pageviews are automatic (`capture_pageview: true`); everything else is an explicit `window.xlnfTrack(name, props)` call.
+PostHog EU Cloud, no cookies, tab-scoped storage, autocapture and session recording off. Pageviews are automatic (`capture_pageview: true`); everything else is an explicit `window.xlnfTrack(name, props)` call.
 
 | Event | Fired when | Properties |
 |---|---|---|
@@ -61,13 +61,23 @@ PostHog EU Cloud, cookieless, autocapture and session recording off. Pageviews a
 
 `note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.
 
-**Known limitation — `persistence: "memory"`.** Storage is session-scoped and nothing is written to the browser, which is what avoids needing a consent banner. PostHog itself warns about the cost at init:
+### Persistence: `sessionStorage`, and why
+
+No cookies, but this **is** storage on the device. It is scoped to one browser tab and wiped when that tab closes.
+
+It replaced `persistence: "memory"`, which stored nothing at all but came at a cost PostHog warns about at init:
 
 > persistence is set to 'memory' but no bootstrap.distinctID was provided. PostHog will mint a new distinct ID on every page load.
 
-So **a new distinct ID is minted per page load**. Consequences worth knowing before reading any dashboard: unique visitors is meaningless (it equals pageviews), and there is no session stitching — you cannot see one reader going note → note → homepage → contact. Per-note view and read counts are still accurate, which is what the notes layer is actually measured on.
+A new distinct ID per page load means no session stitching — every navigation looked like a brand-new person, unique visitors equalled pageviews, and the note → note → homepage → contact path was invisible. For a layer whose whole purpose is measuring discoverability, that was the measurement that mattered.
 
-Changing this means choosing persistent storage, which changes the site's privacy posture and likely requires a consent mechanism. It is a deliberate trade, not an oversight — don't "fix" it without deciding that question first.
+`sessionStorage` keeps `$session_id` stable across navigations **within a tab**, so paths and funnels work within a visit.
+
+What it still doesn't do: recognise a returning reader tomorrow, or link two tabs. That's deliberate — the aim was to fix within-visit stitching, not to start tracking people across days.
+
+**The trade-off this re-opens:** `memory` was chosen partly so that nothing was written to the visitor's device and no consent banner was needed. `sessionStorage` is the mildest form of storage available — first-party, not cross-site, gone on tab close — but it is not nothing, and whether it needs a consent mechanism in your jurisdiction is a question for a human, not for this README. Both copies of the config carry a comment pointing here.
+
+The alternative, if the no-storage posture ever needs restoring, is `cookieless_mode: 'always'` with `person_profiles: 'never'` — PostHog derives a privacy-preserving hash server-side and stores nothing locally. Its docs are explicit that cross-session continuity and `identify()` go away, and are silent on whether within-visit stitching survives, so it would need verifying in Live Events before being trusted.
 
 ## SEO
 

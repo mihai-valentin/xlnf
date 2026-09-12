@@ -12,7 +12,10 @@ posthog.init('phc_CB5LFj3crsxvKs9tn7wVoc5TpwEBrPVyPkhGUseaKeEw', {
   api_host: 'https://eu.i.posthog.com',
   defaults: '2026-01-30',
   person_profiles: 'identified_only',
-  persistence: 'memory',            // cookieless — session-scoped, no consent banner needed
+  // No cookies, but this IS storage on the device: tab-scoped, wiped on tab
+  // close. Chosen over 'memory' because memory mints a new distinct ID on every
+  // navigation, so sessions never stitch across pages. See README → Analytics.
+  persistence: 'sessionStorage',
   autocapture: false,               // manual events only
   capture_pageview: true,
   disable_session_recording: true,
