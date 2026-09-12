@@ -39,7 +39,7 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 1. `mkdir notes/<slug>/` and write `index.html`. Copy the most recent note as the template — the head block carries a lot of required plumbing. Pick a slug that reads as a search query, not as a filename.
 2. Update in the note's `<head>`: `<title>`, `meta description` (~155 chars), `link rel=canonical`, the `og:`/`twitter:` pairs, and both JSON-LD blocks (`TechArticle` + `BreadcrumbList`).
 3. Add the note to **three** places or it stays invisible: `notes/index.html` (the list **and** the `blogPost` array in its JSON-LD), `sitemap.xml`, and `llms.txt`.
-4. Optionally link it from the `notes` section of `index.html` — that list shows the three newest.
+4. Link it from the `notes` section of `index.html`. That list currently shows **every** note — a cap only makes sense once it starts competing with the founder card and contact form for the fold, and same-day publishing makes a "newest N" slice meaningless anyway. When it does need one, make it a deliberate featured set.
 5. **Run `python3 check-notes.py`.** It fails if a note is missing from any of the three registries, if its canonical URL doesn't match its path, if a title or meta description is absent, or if any JSON-LD block won't parse. It also catches the reverse — a sitemap or `llms.txt` entry pointing at a note directory that no longer exists. Step 3 is easy to half-finish and the failure is silent, so don't skip this.
 6. Preview locally, then check the rendered page with Google's Rich Results Test before announcing it anywhere.
 
