@@ -1,227 +1,33 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Giving Claude Code a map of your projects · XLNF</title>
-  <meta name="description" content="A coding agent rooted at one repo has no idea the others exist. One map file by name or alias fixes it — and unlike a path in a config file, it checks itself and admits when it's wrong.">
-  <link rel="canonical" href="https://mihai-valentin.github.io/xlnf/notes/giving-claude-code-a-map-of-your-projects/">
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <meta name="author" content="Valentin Mihai">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="XLNF">
-  <meta property="og:title" content="Giving Claude Code a map of your projects">
-  <meta property="og:description" content="One map of your projects, addressable by name or alias. The interesting part isn't the map — it's that it refuses to guess.">
-  <meta property="og:url" content="https://mihai-valentin.github.io/xlnf/notes/giving-claude-code-a-map-of-your-projects/">
-  <meta property="article:published_time" content="2026-09-12">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Giving Claude Code a map of your projects">
-  <meta name="twitter:description" content="One map of your projects, addressable by name or alias. The interesting part isn't the map — it's that it refuses to guess.">
-
-  <link rel="alternate" type="text/markdown" href="../../llms.txt" title="llms.txt">
-  <link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
-  <link rel="stylesheet" href="../../assets/css/notes.css">
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    "headline": "Giving Claude Code a map of your projects",
-    "description": "A coding agent rooted at one repo has no idea the others exist. One map file by name or alias fixes it — and unlike a path in a config file, it checks itself and admits when it's wrong.",
-    "datePublished": "2026-09-12",
-    "dateModified": "2026-09-12",
-    "inLanguage": "en",
-    "url": "https://mihai-valentin.github.io/xlnf/notes/giving-claude-code-a-map-of-your-projects/",
-    "mainEntityOfPage": "https://mihai-valentin.github.io/xlnf/notes/giving-claude-code-a-map-of-your-projects/",
-    "author": {
-      "@type": "Person",
-      "name": "Valentin Mihai",
-      "url": "https://github.com/mihai-valentin"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "XLNF",
-      "url": "https://mihai-valentin.github.io/xlnf/"
-    },
-    "about": [
-      {
-        "@type": "Thing",
-        "name": "Claude Code"
-      },
-      {
-        "@type": "Thing",
-        "name": "Developer tools"
-      },
-      {
-        "@type": "Thing",
-        "name": "Software configuration"
-      }
-    ],
-    "keywords": "Claude Code, project paths, multi-repo, coding agent, plugin, aliases",
-    "codeRepository": "https://github.com/mihai-valentin/cc-whereis",
-    "license": "https://opensource.org/licenses/MIT"
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moved — giving-claude-code-a-map-of-your-projects is now on xlnf.dev</title>
+<meta name="description" content="This page has moved to https://xlnf.dev/notes/giving-claude-code-a-map-of-your-projects/. XLNF is now published at xlnf.dev.">
+<link rel="canonical" href="https://xlnf.dev/notes/giving-claude-code-a-map-of-your-projects/">
+<meta http-equiv="refresh" content="0; url=https://xlnf.dev/notes/giving-claude-code-a-map-of-your-projects/">
+<meta property="og:url" content="https://xlnf.dev/notes/giving-claude-code-a-map-of-your-projects/">
+<meta property="og:title" content="Moved to xlnf.dev">
+<!--
+  Legacy GitHub Pages location. The canonical site is xlnf.dev; this file exists
+  only so old links keep working and so search engines consolidate on the new
+  domain instead of treating this copy as a second original.
+  Generated for the 2026-09-12 domain migration. Do not add content here.
+-->
+<style>
+  body {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    max-width: 60ch; margin: 0 auto; padding: 3rem 1.25rem;
+    line-height: 1.6; color: #c9d1d9; background: #0d1117;
   }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "XLNF",
-        "item": "https://mihai-valentin.github.io/xlnf/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Notes",
-        "item": "https://mihai-valentin.github.io/xlnf/notes/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": "Giving Claude Code a map of your projects"
-      }
-    ]
-  }
-  </script>
-
-  <script>
-    // FOUC guard: apply persisted theme before first paint.
-    (function () {
-      try {
-        var t = localStorage.getItem("xlnf-theme");
-        if (!t) {
-          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        }
-        document.documentElement.dataset.theme = t;
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="preconnect" href="https://eu.i.posthog.com" crossorigin>
-  <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
-  <script defer src="../../assets/js/posthog.js"></script>
-  <script defer src="../../assets/js/analytics.js"></script>
-  <script defer src="../../assets/js/theme.js"></script>
-  <script defer src="../../assets/js/scroll-top.js"></script>
-  <script defer src="../../assets/js/notes.js"></script>
+  a { color: #7ee787; }
+  .muted { color: #8b949e; font-size: 0.9rem; }
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#main">skip to content</a>
-  <header class="site-header">
-    <div class="container">
-      <p class="prompt"><span class="pwd">~/xlnf/notes</span> $ cat giving-claude-code-a-map-of-your-projects<span class="cursor">_</span></p>
-      <div class="header-meta">
-        <span><a href="../../">XLNF</a> :: <a href="../">notes</a></span>
-        <button id="theme-toggle" type="button" aria-label="toggle theme">☀</button>
-      </div>
-    </div>
-  </header>
-
-  <main id="main">
-    <div class="container">
-      <nav class="breadcrumb" aria-label="breadcrumb">
-        <ol>
-          <li><a href="../../">xlnf</a></li>
-          <li><a href="../">notes</a></li>
-          <li aria-current="page">giving-claude-code-a-map-of-your-projects</li>
-        </ol>
-      </nav>
-
-      <article>
-        <header class="note-header">
-          <h1>Giving Claude Code a map of your projects</h1>
-          <p class="note-meta">
-            <time datetime="2026-09-12">2026-09-12</time> ·
-            Valentin Mihai ·
-            ~5 min read
-          </p>
-          <ul class="tags">
-            <li>claude-code</li>
-            <li>developer-tools</li>
-            <li>multi-repo</li>
-            <li>plugins</li>
-          </ul>
-        </header>
-
-        <div class="note-body">
-<div class="tldr">
-  <span class="tldr-label">TL;DR</span>
-  <p>A coding agent rooted at project A has no idea project B exists, so you paste absolute paths forever. One map file fixes that — and unlike a path written into a config file, the map can <em>check itself</em> and admit when it is wrong.</p>
-  <p><a href="https://github.com/mihai-valentin/cc-whereis">github.com/mihai-valentin/cc-whereis</a> · Claude Code plugin, MIT</p>
-</div>
-
-<h2 class="section">the thirty-second problem you have every day</h2>
-
-<p>You are in a session rooted at one repository. You ask about something in another — "how does the dashboard do auth", "is that fixed in the API repo yet". The agent has never heard of either. So you paste an absolute path, and then you paste it again tomorrow, because nothing about that exchange persisted.</p>
-
-<p>The paths are stable facts about your machine. The session is the wrong place to keep re-teaching them.</p>
-
-<h2 class="section">"just put them in your agent config"</h2>
-
-<p>This is the first objection, it is a reasonable one, and it is worth answering properly because three of the four reasons are obvious and the fourth is the interesting one.</p>
-
-<ol>
-  <li><strong>It pollutes every project's context with unrelated paths.</strong> Project A's context should not carry the filesystem layout of thirty repositories it will never touch. Context hygiene is the whole point of the exercise.</li>
-  <li><strong>Projects move.</strong> They get renamed, archived, shifted to another disk. A hard-coded path is wrong the moment anything shifts.</li>
-  <li><strong>It is an N-way sync problem.</strong> One map per project, all drifting independently, all needing the same edit.</li>
-  <li><strong>A stale line cannot know it is stale.</strong> It just quietly lies.</li>
-</ol>
-
-<p>The first three are fixed by construction: one file, outside every project, read only when a lookup actually happens.</p>
-
-<p>The fourth is not fixed by moving the file. <strong>A single map rots exactly like thirty copies do</strong> — centralised rot is easier to repair, but it is still rot. So that reason is the one that has to be answered with behaviour rather than with architecture.</p>
-
-<h2 class="section">the part that earns the tool</h2>
-
-<p>A resolved path gets checked before it is used. If the directory is gone, you are told — <em>"known label, missing directory"</em> — rather than having the problem worked around.</p>
-
-<p>Two refusals matter as much as the check:</p>
-
-<ul>
-  <li><strong>It never substitutes a plausible neighbour.</strong> Finding a similarly-named sibling directory and quietly using it is the worst available outcome, because the work looks like it succeeded and you have no reason to inspect a path you were never shown.</li>
-  <li><strong>An ambiguous name is an error naming both candidates</strong>, not a coin flip resolved silently in favour of whichever was parsed first.</li>
-</ul>
-
-<p>Which is the whole design in one line: <strong>if it isn't sure, you find out.</strong> A config-file line can do none of this. That is the difference between a map and a tool that reads one.</p>
-
-<h2 class="section">aliases, because names aren't stable either</h2>
-
-<p>The same project is "dashboard" in your head on Monday and "explore" in the conversation on Thursday — internal codename, repository name, the name the team actually says. Forcing one canonical label means remembering which one you chose.</p>
-
-<pre><code>[dashboard]
-path    = ~/code/acme-dashboard
-aliases = explore, analytics-ui</code></pre>
-
-<p>Aliases are peers of the name for matching, so all three resolve. The format has no quoting and no escapes, which makes a Windows path like <code>C:\Users\you\proj</code> simply a value rather than a problem.</p>
-
-<h2 class="section">the design bet: no runtime</h2>
-
-<p>There is no binary here, and no Node or Python process. The plugin is markdown plus one config file; resolution is string-matching against something around two kilobytes, and verification is an <code>ls</code>. The agent already has excellent tools for both.</p>
-
-<p>That buys portability — it works anywhere the agent works, native Windows included, with no per-platform builds — but the constraint that actually mattered is this one: <strong>it must cost nothing until it is used.</strong> A plugin whose pitch is "stop filling your context with things you don't need" has lost its own argument if it sits in every session's context. So the skill loads on demand, and the map is read only when a lookup genuinely happens.</p>
-
-<p>Most of the time you never invoke it. You name a project, and it resolves.</p>
-        </div>
-
-        <footer class="note-footer">
-          <p>← <a href="../">all notes</a> · <a href="../../">xlnf</a> · found this wrong or incomplete? <a href="mailto:mihaivalentin373@gmail.com">tell me</a></p>
-        </footer>
-      </article>
-    </div>
-  </main>
-
-  <button id="scroll-top" type="button" aria-label="scroll to top" hidden>↑ top</button>
-
-  <footer class="site-footer">
-    <div class="container">
-      © XLNF · all rights reversed
-    </div>
-  </footer>
+<p>XLNF has moved to <strong>xlnf.dev</strong>.</p>
+<p>This page is now at <a href="https://xlnf.dev/notes/giving-claude-code-a-map-of-your-projects/">https://xlnf.dev/notes/giving-claude-code-a-map-of-your-projects/</a>.</p>
+<p class="muted">Redirecting automatically. Update your bookmarks — this address is the old location and will not be kept forever.</p>
 </body>
 </html>

@@ -1,219 +1,33 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>cdp: jumping to project directories by label, not by guess · XLNF</title>
-  <meta name="description" content="Frequency-ranked jumpers infer where you want to go. cdp lets you declare it — and adds the half that matters: the commands you always run once you arrive.">
-  <link rel="canonical" href="https://mihai-valentin.github.io/xlnf/notes/cdp-jumping-to-project-directories-by-label/">
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <meta name="author" content="Valentin Mihai">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="XLNF">
-  <meta property="og:title" content="cdp: jumping to project directories by label, not by guess">
-  <meta property="og:description" content="Frequency-ranked jumpers guess. cdp lets you declare labels, and attach the startup ritual to them.">
-  <meta property="og:url" content="https://mihai-valentin.github.io/xlnf/notes/cdp-jumping-to-project-directories-by-label/">
-  <meta property="article:published_time" content="2026-09-12">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="cdp: jumping to project directories by label, not by guess">
-  <meta name="twitter:description" content="Frequency-ranked jumpers guess. cdp lets you declare labels, and attach the startup ritual to them.">
-
-  <link rel="alternate" type="text/markdown" href="../../llms.txt" title="llms.txt">
-  <link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
-  <link rel="stylesheet" href="../../assets/css/notes.css">
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    "headline": "cdp: jumping to project directories by label, not by guess",
-    "description": "Frequency-ranked jumpers infer where you want to go. cdp lets you declare it — and adds the half that matters: the commands you always run once you arrive.",
-    "datePublished": "2026-09-12",
-    "dateModified": "2026-09-12",
-    "inLanguage": "en",
-    "url": "https://mihai-valentin.github.io/xlnf/notes/cdp-jumping-to-project-directories-by-label/",
-    "mainEntityOfPage": "https://mihai-valentin.github.io/xlnf/notes/cdp-jumping-to-project-directories-by-label/",
-    "author": {
-      "@type": "Person",
-      "name": "Valentin Mihai",
-      "url": "https://github.com/mihai-valentin"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "XLNF",
-      "url": "https://mihai-valentin.github.io/xlnf/"
-    },
-    "about": [
-      {
-        "@type": "Thing",
-        "name": "Bash"
-      },
-      {
-        "@type": "Thing",
-        "name": "Command-line interface"
-      },
-      {
-        "@type": "Thing",
-        "name": "Developer tools"
-      }
-    ],
-    "keywords": "cd project directory, bash CLI, zoxide alternative, shell function, tmux, macros",
-    "codeRepository": "https://github.com/mihai-valentin/cdp",
-    "license": "https://opensource.org/licenses/MIT"
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moved — cdp-jumping-to-project-directories-by-label is now on xlnf.dev</title>
+<meta name="description" content="This page has moved to https://xlnf.dev/notes/cdp-jumping-to-project-directories-by-label/. XLNF is now published at xlnf.dev.">
+<link rel="canonical" href="https://xlnf.dev/notes/cdp-jumping-to-project-directories-by-label/">
+<meta http-equiv="refresh" content="0; url=https://xlnf.dev/notes/cdp-jumping-to-project-directories-by-label/">
+<meta property="og:url" content="https://xlnf.dev/notes/cdp-jumping-to-project-directories-by-label/">
+<meta property="og:title" content="Moved to xlnf.dev">
+<!--
+  Legacy GitHub Pages location. The canonical site is xlnf.dev; this file exists
+  only so old links keep working and so search engines consolidate on the new
+  domain instead of treating this copy as a second original.
+  Generated for the 2026-09-12 domain migration. Do not add content here.
+-->
+<style>
+  body {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    max-width: 60ch; margin: 0 auto; padding: 3rem 1.25rem;
+    line-height: 1.6; color: #c9d1d9; background: #0d1117;
   }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "XLNF",
-        "item": "https://mihai-valentin.github.io/xlnf/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Notes",
-        "item": "https://mihai-valentin.github.io/xlnf/notes/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": "cdp: jumping to project directories by label, not by guess"
-      }
-    ]
-  }
-  </script>
-
-  <script>
-    // FOUC guard: apply persisted theme before first paint.
-    (function () {
-      try {
-        var t = localStorage.getItem("xlnf-theme");
-        if (!t) {
-          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        }
-        document.documentElement.dataset.theme = t;
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="preconnect" href="https://eu.i.posthog.com" crossorigin>
-  <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
-  <script defer src="../../assets/js/posthog.js"></script>
-  <script defer src="../../assets/js/analytics.js"></script>
-  <script defer src="../../assets/js/theme.js"></script>
-  <script defer src="../../assets/js/scroll-top.js"></script>
-  <script defer src="../../assets/js/notes.js"></script>
+  a { color: #7ee787; }
+  .muted { color: #8b949e; font-size: 0.9rem; }
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#main">skip to content</a>
-  <header class="site-header">
-    <div class="container">
-      <p class="prompt"><span class="pwd">~/xlnf/notes</span> $ cat cdp-jumping-to-project-directories-by-label<span class="cursor">_</span></p>
-      <div class="header-meta">
-        <span><a href="../../">XLNF</a> :: <a href="../">notes</a></span>
-        <button id="theme-toggle" type="button" aria-label="toggle theme">☀</button>
-      </div>
-    </div>
-  </header>
-
-  <main id="main">
-    <div class="container">
-      <nav class="breadcrumb" aria-label="breadcrumb">
-        <ol>
-          <li><a href="../../">xlnf</a></li>
-          <li><a href="../">notes</a></li>
-          <li aria-current="page">cdp-jumping-to-project-directories-by-label</li>
-        </ol>
-      </nav>
-
-      <article>
-        <header class="note-header">
-          <h1>cdp: jumping to project directories by label, not by guess</h1>
-          <p class="note-meta">
-            <time datetime="2026-09-12">2026-09-12</time> ·
-            Valentin Mihai ·
-            ~4 min read
-          </p>
-          <ul class="tags">
-            <li>bash</li>
-            <li>cli</li>
-            <li>developer-tools</li>
-            <li>tmux</li>
-          </ul>
-        </header>
-
-        <div class="note-body">
-<div class="tldr">
-  <span class="tldr-label">TL;DR</span>
-  <p>Frequency-ranked directory jumpers guess where you want to go. <code>cdp</code> lets you <em>declare</em> it, in an SSH-style config file — and then goes one step further, because the thing you actually do all day is not "go to the project", it is "go to the project and start the thing".</p>
-  <p><a href="https://github.com/mihai-valentin/cdp">github.com/mihai-valentin/cdp</a> · bash, MIT</p>
-</div>
-
-<h2 class="section">the actual annoyance</h2>
-
-<p>Switching between something like thirty project directories a day, each with its own ritual to start work. One needs <code>git pull &amp;&amp; pnpm dev</code>. One needs a tmux session with a dev server in one pane and a tunnel in another. One needs you to descend into <code>.docker/</code> and pick a Node version first.</p>
-
-<p>So the <code>cd</code> is the boring half. The interesting half is everything you type immediately after it, every single time, from memory.</p>
-
-<h2 class="section">why not zoxide</h2>
-
-<p><code>zoxide</code>, <code>autojump</code> and <code>fasd</code> are excellent and they solve a different problem. They rank directories by how often you visit them and let you get there with a fragment of the name. That is inference: the tool watches you and guesses.</p>
-
-<p>Two things follow from that. Your most-visited directory is not necessarily the one you want a short name for. And a frequency index has nowhere to hang the other half of the problem — there is no place in "I visited <code>/home/me/work/acme-api</code> 94 times" to record that arriving there usually means starting three processes.</p>
-
-<p>So <code>cdp</code> takes the opposite position: <strong>labels are authored, not inferred.</strong> You write them down once, they never drift, and the config file becomes somewhere to put the rest of the ritual.</p>
-
-<h2 class="section">the config is the feature</h2>
-
-<p>The format is deliberately SSH-config-shaped — indentation-based blocks, a keyword per line — because every developer already knows how to read one:</p>
-
-<pre><code>Project myproject
-    Path /home/user/myproject
-    Macro deploy
-        Run cd ./static-pages
-        Run ./scripts/publish.sh
-    Macro logs
-        Run tail -f /var/log/myproject.log</code></pre>
-
-<p>Which gives you <code>cdp myproject</code> to jump, and <code>cdp myproject deploy</code> to jump and then run the deploy steps in order. Tmux blocks go further and describe a whole pane layout to build on arrival.</p>
-
-<p>One decision in there is worth calling out because it looks like a bug and isn't: <strong>macros run in your interactive shell, not a subshell.</strong> So <code>export FOO=bar</code> inside a macro changes your shell. That is the point — a macro is meant to be the keystrokes you would have typed, and keystrokes you type affect your session. Sandboxing them would make them useless for exactly the setup work they exist to automate.</p>
-
-<h2 class="section">the constraint that shapes the whole tool</h2>
-
-<p>A child process cannot change its parent's working directory. So no binary, in any language, can implement <code>cd</code> for your shell. This is why <code>zoxide</code>, <code>nvm</code>, <code>direnv</code> and everything else in this category hand you a shell snippet to <code>eval</code>:</p>
-
-<pre><code>eval "$(~/.local/bin/cdp init bash)"</code></pre>
-
-<p>That emits a shell <em>function</em>, which runs inside your shell and can therefore move it. The function stays thin and delegates everything else to subprocesses, which keeps the part that must be sourced into your shell small enough to audit.</p>
-
-<p>Given that a shell function is unavoidable, writing the rest in Go or Rust would buy a binary you still could not call directly. So: <strong>bash, with no runtime dependencies</strong> beyond coreutils and <code>flock</code>. Nothing to install, nothing to keep up to date, and the whole thing stays readable — which matters more than usual for code that runs in every shell you open.</p>
-
-<h2 class="section">the honest trade-off</h2>
-
-<p>You have to write the config. A frequency tracker works the moment you install it; <code>cdp</code> does nothing until you tell it about a project. For five directories that is a bad deal. For thirty, each with its own startup ritual, the config pays for itself in about a day — and unlike an inferred index, it is something you can read, diff and copy to another machine.</p>
-        </div>
-
-        <footer class="note-footer">
-          <p>← <a href="../">all notes</a> · <a href="../../">xlnf</a> · found this wrong or incomplete? <a href="mailto:mihaivalentin373@gmail.com">tell me</a></p>
-        </footer>
-      </article>
-    </div>
-  </main>
-
-  <button id="scroll-top" type="button" aria-label="scroll to top" hidden>↑ top</button>
-
-  <footer class="site-footer">
-    <div class="container">
-      © XLNF · all rights reversed
-    </div>
-  </footer>
+<p>XLNF has moved to <strong>xlnf.dev</strong>.</p>
+<p>This page is now at <a href="https://xlnf.dev/notes/cdp-jumping-to-project-directories-by-label/">https://xlnf.dev/notes/cdp-jumping-to-project-directories-by-label/</a>.</p>
+<p class="muted">Redirecting automatically. Update your bookmarks — this address is the old location and will not be kept forever.</p>
 </body>
 </html>

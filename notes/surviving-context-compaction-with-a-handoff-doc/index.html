@@ -1,219 +1,33 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Surviving context compaction with a handoff doc · XLNF</title>
-  <meta name="description" content="Compaction keeps what happened and drops what it cost to learn. Git preserves the first; nothing preserves the second. One filter decides what belongs in a checkpoint doc.">
-  <link rel="canonical" href="https://mihai-valentin.github.io/xlnf/notes/surviving-context-compaction-with-a-handoff-doc/">
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <meta name="author" content="Valentin Mihai">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="XLNF">
-  <meta property="og:title" content="Surviving context compaction with a handoff doc">
-  <meta property="og:description" content="Compaction is lossy in a predictable direction. The fix is a versioned checkpoint doc with a strict admission policy.">
-  <meta property="og:url" content="https://mihai-valentin.github.io/xlnf/notes/surviving-context-compaction-with-a-handoff-doc/">
-  <meta property="article:published_time" content="2026-09-12">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Surviving context compaction with a handoff doc">
-  <meta name="twitter:description" content="Compaction is lossy in a predictable direction. The fix is a versioned checkpoint doc with a strict admission policy.">
-
-  <link rel="alternate" type="text/markdown" href="../../llms.txt" title="llms.txt">
-  <link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
-  <link rel="stylesheet" href="../../assets/css/notes.css">
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    "headline": "Surviving context compaction with a handoff doc",
-    "description": "Compaction keeps what happened and drops what it cost to learn. Git preserves the first; nothing preserves the second. One filter decides what belongs in a checkpoint doc.",
-    "datePublished": "2026-09-12",
-    "dateModified": "2026-09-12",
-    "inLanguage": "en",
-    "url": "https://mihai-valentin.github.io/xlnf/notes/surviving-context-compaction-with-a-handoff-doc/",
-    "mainEntityOfPage": "https://mihai-valentin.github.io/xlnf/notes/surviving-context-compaction-with-a-handoff-doc/",
-    "author": {
-      "@type": "Person",
-      "name": "Valentin Mihai",
-      "url": "https://github.com/mihai-valentin"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "XLNF",
-      "url": "https://mihai-valentin.github.io/xlnf/"
-    },
-    "about": [
-      {
-        "@type": "Thing",
-        "name": "Claude Code"
-      },
-      {
-        "@type": "Thing",
-        "name": "Large language models"
-      },
-      {
-        "@type": "Thing",
-        "name": "Technical documentation"
-      }
-    ],
-    "keywords": "Claude Code, context compaction, context window, AI agent memory, handoff, HANDOFF.md",
-    "codeRepository": "https://github.com/mihai-valentin/cc-handoff",
-    "license": "https://opensource.org/licenses/MIT"
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moved — surviving-context-compaction-with-a-handoff-doc is now on xlnf.dev</title>
+<meta name="description" content="This page has moved to https://xlnf.dev/notes/surviving-context-compaction-with-a-handoff-doc/. XLNF is now published at xlnf.dev.">
+<link rel="canonical" href="https://xlnf.dev/notes/surviving-context-compaction-with-a-handoff-doc/">
+<meta http-equiv="refresh" content="0; url=https://xlnf.dev/notes/surviving-context-compaction-with-a-handoff-doc/">
+<meta property="og:url" content="https://xlnf.dev/notes/surviving-context-compaction-with-a-handoff-doc/">
+<meta property="og:title" content="Moved to xlnf.dev">
+<!--
+  Legacy GitHub Pages location. The canonical site is xlnf.dev; this file exists
+  only so old links keep working and so search engines consolidate on the new
+  domain instead of treating this copy as a second original.
+  Generated for the 2026-09-12 domain migration. Do not add content here.
+-->
+<style>
+  body {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    max-width: 60ch; margin: 0 auto; padding: 3rem 1.25rem;
+    line-height: 1.6; color: #c9d1d9; background: #0d1117;
   }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "XLNF",
-        "item": "https://mihai-valentin.github.io/xlnf/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Notes",
-        "item": "https://mihai-valentin.github.io/xlnf/notes/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": "Surviving context compaction with a handoff doc"
-      }
-    ]
-  }
-  </script>
-
-  <script>
-    // FOUC guard: apply persisted theme before first paint.
-    (function () {
-      try {
-        var t = localStorage.getItem("xlnf-theme");
-        if (!t) {
-          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        }
-        document.documentElement.dataset.theme = t;
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="preconnect" href="https://eu.i.posthog.com" crossorigin>
-  <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
-  <script defer src="../../assets/js/posthog.js"></script>
-  <script defer src="../../assets/js/analytics.js"></script>
-  <script defer src="../../assets/js/theme.js"></script>
-  <script defer src="../../assets/js/scroll-top.js"></script>
-  <script defer src="../../assets/js/notes.js"></script>
+  a { color: #7ee787; }
+  .muted { color: #8b949e; font-size: 0.9rem; }
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#main">skip to content</a>
-  <header class="site-header">
-    <div class="container">
-      <p class="prompt"><span class="pwd">~/xlnf/notes</span> $ cat surviving-context-compaction-with-a-handoff-doc<span class="cursor">_</span></p>
-      <div class="header-meta">
-        <span><a href="../../">XLNF</a> :: <a href="../">notes</a></span>
-        <button id="theme-toggle" type="button" aria-label="toggle theme">☀</button>
-      </div>
-    </div>
-  </header>
-
-  <main id="main">
-    <div class="container">
-      <nav class="breadcrumb" aria-label="breadcrumb">
-        <ol>
-          <li><a href="../../">xlnf</a></li>
-          <li><a href="../">notes</a></li>
-          <li aria-current="page">surviving-context-compaction-with-a-handoff-doc</li>
-        </ol>
-      </nav>
-
-      <article>
-        <header class="note-header">
-          <h1>Surviving context compaction with a handoff doc</h1>
-          <p class="note-meta">
-            <time datetime="2026-09-12">2026-09-12</time> ·
-            Valentin Mihai ·
-            ~6 min read
-          </p>
-          <ul class="tags">
-            <li>claude-code</li>
-            <li>ai-agents</li>
-            <li>context-window</li>
-            <li>documentation</li>
-          </ul>
-        </header>
-
-        <div class="note-body">
-<div class="tldr">
-  <span class="tldr-label">TL;DR</span>
-  <p>Context compaction is lossy in a predictable direction: it keeps <em>what happened</em> and drops <em>what it cost to learn</em>. Git already preserves the first. Nothing preserves the second, so the next session pays for the same lesson twice.</p>
-  <p><code>cc-handoff</code> is a versioned checkpoint doc with one filter deciding what goes in it.</p>
-  <p><a href="https://github.com/mihai-valentin/cc-handoff">github.com/mihai-valentin/cc-handoff</a> · Claude Code plugin, MIT</p>
-</div>
-
-<h2 class="section">what compaction actually takes</h2>
-
-<p>When a long agent session runs out of context, it gets summarised. The summary is competent at continuity: what the task was, which files moved, where things stand.</p>
-
-<p>What does not survive is the expensive part. The approach you tried for an hour before it turned out to be wrong. The belief you held confidently and then disproved. The environment quirk that took three failed runs to pin down. The finding you deliberately decided not to act on — which, to a fresh session, is indistinguishable from a finding nobody noticed.</p>
-
-<p>Notice that those are precisely the facts that cannot be recovered from anywhere else. The commits are in git. The code is on disk. The tests still run. The <em>reasoning</em> was only ever in the conversation, and now it is gone — so the next session re-derives it, at full price.</p>
-
-<h2 class="section">the filter</h2>
-
-<p>A checkpoint doc is only as good as its admission policy, because a doc that records everything is just a second, worse copy of the transcript. So every candidate fact faces one question:</p>
-
-<blockquote>Could the next session recover this from <code>git log -p</code>, the code, and the test suite in under a minute?</blockquote>
-
-<p>If yes, leave it out. Git does file inventories better than prose and is never wrong about them. If no, it belongs.</p>
-
-<p>What survives that filter is a short and fairly specific list: rejected alternatives and why, beliefs that turned out false, findings deliberately declined, environment traps found by trial and error, constraints that were only ever stated in conversation — and the difference between "the tests pass" and "I ran the tests", which is a distinction a summary will quietly flatten.</p>
-
-<h2 class="section">the rule that stops it rotting</h2>
-
-<p>The interesting failure mode of a checkpoint doc isn't being incomplete, it's being <em>confidently out of date</em>. One rule governs that:</p>
-
-<blockquote>Any sentence describing work that REMAINS must be true at the version it ships in.</blockquote>
-
-<p>A stale "next steps" list is worse than having no doc at all. With no doc, the next session reads the code. With a stale doc, it trusts a plan and carefully rebuilds something that already exists. So each pass begins by sweeping the previous version for forward-looking claims that have since become false.</p>
-
-<p>This is also why the doc <strong>increments</strong> rather than regenerates. Every write bumps <code>v&lt;N&gt;</code>, replaces what changed, and appends what was learned — so a dead end discovered in v1 is still there in v7, which is the entire value. Regenerating from scratch each time would throw away exactly the history the tool exists to keep.</p>
-
-<h2 class="section">knowing when to write it</h2>
-
-<p>A checkpoint doc written under pressure, with the context window nearly full, is a worse doc. So a hook reads the true context size from the transcript after each turn and prints one line at 75% and one at 88%:</p>
-
-<pre><code>📝 Context 76% (760k/1000k). Good moment for /handoff — the doc is better
-   written now than under pressure.</code></pre>
-
-<p>Deliberately, the hook <em>only prints</em>. It never invokes the skill and never injects context of its own — a tool whose job is to protect your context budget has no business spending it uninvited. Deciding when to checkpoint stays a human call.</p>
-
-<p>The one configuration that matters: the hook cannot detect your context window, because a transcript records the model id but not whether a large-context variant is in play. It has to be told. Leave <code>CC_CONTEXT_LIMIT</code> unset on a 1M-window model and every percentage is five times too high — the first nudge fires around 15% full, you learn within a day to ignore it, and then there is no warning at all when 88% actually arrives. A nudge you have been trained to dismiss is worse than no nudge, so the message labels the figure <code>assumed 200k</code> until you configure it.</p>
-
-<h2 class="section">and the other direction</h2>
-
-<p>Writing the doc is half of it; the doc has to come back on its own, or it won't be read. A <code>SessionStart</code> hook restores the first three sections the moment compaction lands, and a resume command does the full pass — read the doc, reconcile it against the repository as it is now, and report what has gone stale. That pass is strictly read-only: reconciliation tells you what drifted, and never quietly edits the record to match.</p>
-        </div>
-
-        <footer class="note-footer">
-          <p>← <a href="../">all notes</a> · <a href="../../">xlnf</a> · found this wrong or incomplete? <a href="mailto:mihaivalentin373@gmail.com">tell me</a></p>
-        </footer>
-      </article>
-    </div>
-  </main>
-
-  <button id="scroll-top" type="button" aria-label="scroll to top" hidden>↑ top</button>
-
-  <footer class="site-footer">
-    <div class="container">
-      © XLNF · all rights reversed
-    </div>
-  </footer>
+<p>XLNF has moved to <strong>xlnf.dev</strong>.</p>
+<p>This page is now at <a href="https://xlnf.dev/notes/surviving-context-compaction-with-a-handoff-doc/">https://xlnf.dev/notes/surviving-context-compaction-with-a-handoff-doc/</a>.</p>
+<p class="muted">Redirecting automatically. Update your bookmarks — this address is the old location and will not be kept forever.</p>
 </body>
 </html>

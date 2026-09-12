@@ -1,251 +1,33 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WSL 2 loses all networking under Check Point VPN hub mode · XLNF</title>
-  <meta name="description" content="Connect the Check Point Endpoint Security VPN in hub mode and WSL 2 stops reaching anything, while Windows keeps working. It looks like DNS. It is routing: a /21 beats a /20.">
-  <link rel="canonical" href="https://mihai-valentin.github.io/xlnf/notes/wsl-2-check-point-vpn-hub-mode/">
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <meta name="author" content="Valentin Mihai">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="XLNF">
-  <meta property="og:title" content="WSL 2 loses all networking under Check Point VPN hub mode">
-  <meta property="og:description" content="It looks like a DNS problem. It is routing: the VPN client splits the WSL subnet into two halves, and a /21 beats a /20.">
-  <meta property="og:url" content="https://mihai-valentin.github.io/xlnf/notes/wsl-2-check-point-vpn-hub-mode/">
-  <meta property="article:published_time" content="2026-09-12">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="WSL 2 loses all networking under Check Point VPN hub mode">
-  <meta name="twitter:description" content="It looks like a DNS problem. It is routing: the VPN client splits the WSL subnet into two halves, and a /21 beats a /20.">
-
-  <link rel="alternate" type="text/markdown" href="../../llms.txt" title="llms.txt">
-  <link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
-  <link rel="stylesheet" href="../../assets/css/notes.css">
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    "headline": "WSL 2 loses all networking under Check Point VPN hub mode",
-    "description": "Why WSL 2 loses all connectivity when the Check Point Endpoint Security VPN connects in hub mode, why it is not a DNS or MTU problem, and how to repair the routes.",
-    "datePublished": "2026-09-12",
-    "dateModified": "2026-09-12",
-    "inLanguage": "en",
-    "url": "https://mihai-valentin.github.io/xlnf/notes/wsl-2-check-point-vpn-hub-mode/",
-    "mainEntityOfPage": "https://mihai-valentin.github.io/xlnf/notes/wsl-2-check-point-vpn-hub-mode/",
-    "author": {
-      "@type": "Person",
-      "name": "Valentin Mihai",
-      "url": "https://github.com/mihai-valentin"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "XLNF",
-      "url": "https://mihai-valentin.github.io/xlnf/"
-    },
-    "about": [
-      { "@type": "Thing", "name": "Windows Subsystem for Linux" },
-      { "@type": "Thing", "name": "IP routing" },
-      { "@type": "Thing", "name": "VPN" }
-    ],
-    "keywords": "WSL 2, Check Point Endpoint Security VPN, hub mode, full tunnel, routing, PowerShell, Windows 11",
-    "codeRepository": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix",
-    "license": "https://opensource.org/licenses/MIT"
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moved — wsl-2-check-point-vpn-hub-mode is now on xlnf.dev</title>
+<meta name="description" content="This page has moved to https://xlnf.dev/notes/wsl-2-check-point-vpn-hub-mode/. XLNF is now published at xlnf.dev.">
+<link rel="canonical" href="https://xlnf.dev/notes/wsl-2-check-point-vpn-hub-mode/">
+<meta http-equiv="refresh" content="0; url=https://xlnf.dev/notes/wsl-2-check-point-vpn-hub-mode/">
+<meta property="og:url" content="https://xlnf.dev/notes/wsl-2-check-point-vpn-hub-mode/">
+<meta property="og:title" content="Moved to xlnf.dev">
+<!--
+  Legacy GitHub Pages location. The canonical site is xlnf.dev; this file exists
+  only so old links keep working and so search engines consolidate on the new
+  domain instead of treating this copy as a second original.
+  Generated for the 2026-09-12 domain migration. Do not add content here.
+-->
+<style>
+  body {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    max-width: 60ch; margin: 0 auto; padding: 3rem 1.25rem;
+    line-height: 1.6; color: #c9d1d9; background: #0d1117;
   }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "XLNF", "item": "https://mihai-valentin.github.io/xlnf/" },
-      { "@type": "ListItem", "position": 2, "name": "Notes", "item": "https://mihai-valentin.github.io/xlnf/notes/" },
-      { "@type": "ListItem", "position": 3, "name": "WSL 2 under Check Point VPN hub mode" }
-    ]
-  }
-  </script>
-
-  <script>
-    // FOUC guard: apply persisted theme before first paint.
-    (function () {
-      try {
-        var t = localStorage.getItem("xlnf-theme");
-        if (!t) {
-          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        }
-        document.documentElement.dataset.theme = t;
-      } catch (e) {}
-    })();
-  </script>
-
-  <link rel="preconnect" href="https://eu.i.posthog.com" crossorigin>
-  <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
-  <script defer src="../../assets/js/posthog.js"></script>
-  <script defer src="../../assets/js/analytics.js"></script>
-  <script defer src="../../assets/js/theme.js"></script>
-  <script defer src="../../assets/js/scroll-top.js"></script>
-  <script defer src="../../assets/js/notes.js"></script>
+  a { color: #7ee787; }
+  .muted { color: #8b949e; font-size: 0.9rem; }
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#main">skip to content</a>
-  <header class="site-header">
-    <div class="container">
-      <p class="prompt"><span class="pwd">~/xlnf/notes</span> $ cat wsl-2-check-point-vpn-hub-mode<span class="cursor">_</span></p>
-      <div class="header-meta">
-        <span><a href="../../">XLNF</a> :: <a href="../">notes</a></span>
-        <button id="theme-toggle" type="button" aria-label="toggle theme">☀</button>
-      </div>
-    </div>
-  </header>
-
-  <main id="main">
-    <div class="container">
-      <nav class="breadcrumb" aria-label="breadcrumb">
-        <ol>
-          <li><a href="../../">xlnf</a></li>
-          <li><a href="../">notes</a></li>
-          <li aria-current="page">wsl-2-check-point-vpn-hub-mode</li>
-        </ol>
-      </nav>
-
-      <article>
-        <header class="note-header">
-          <h1>WSL 2 loses all networking under Check Point VPN hub mode</h1>
-          <p class="note-meta">
-            <time datetime="2026-09-12">2026-09-12</time> ·
-            Valentin Mihai ·
-            about a 6 minute read
-          </p>
-          <ul class="tags">
-            <li>wsl-2</li>
-            <li>check-point-vpn</li>
-            <li>routing</li>
-            <li>windows</li>
-            <li>powershell</li>
-          </ul>
-        </header>
-
-        <div class="note-body">
-          <div class="tldr">
-            <span class="tldr-label">TL;DR</span>
-            <p>In hub mode the Check Point client pulls your locally attached networks into the tunnel — and it counts the private Windows-to-WSL link as one of them. It installs two routes, each covering half the WSL subnet, pointing at the VPN adapter. Windows prefers the more specific route, so a <code>/21</code> beats WSL's <code>/20</code>, and every reply meant for the WSL virtual machine disappears into the tunnel.</p>
-            <p>The fix is to delete exactly those routes, which is what <a href="https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix">wsl-checkpoint-vpn-fix</a> does.</p>
-          </div>
-
-          <h2 class="section">the symptom</h2>
-
-          <p>Connect the VPN and Windows carries on as if nothing happened. The browser loads pages, PowerShell reaches the internet, corporate resources resolve. Then you drop into WSL and everything is dead:</p>
-
-<pre><code>$ curl -sS https://www.google.com
-curl: (28) Failed to connect to www.google.com port 443 after 9964 ms: Connection timed out
-
-$ ping -c 2 8.8.8.8
-2 packets transmitted, 0 received, 100% packet loss</code></pre>
-
-          <p><code>apt</code> hangs. <code>git clone</code> hangs. <code>pip</code>, <code>npm</code>, anything that opens a socket sits there until it gives up. Disconnect the VPN and it all comes back instantly. Reconnect and it breaks again. The correlation is perfect, which is the one genuinely helpful thing about this bug.</p>
-
-          <h2 class="section">why it looks like DNS, and why it isn't</h2>
-
-          <p>The instinct is DNS, and a great deal of the advice online will agree with you. It is the wrong trail, and there is a clean way to prove it in one command:</p>
-
-<pre><code>$ getent hosts example.com
-93.184.216.34   example.com</code></pre>
-
-          <p>Names resolve fine. WSL's DNS tunneling answers lookups through Windows, and Windows still has working DNS. So resolution is healthy and it is the <em>connections</em> that fail — which rules out the entire family of <code>resolv.conf</code> workarounds in one go.</p>
-
-          <p>The MTU theory dies almost as quickly. MTU problems are selective: small packets get through, large ones stall. Here nothing gets through at all, not even a bare ICMP echo. And in NAT mode WSL had already negotiated an MTU below the VPN adapter's 1350.</p>
-
-          <p>Both of those are worth ruling out explicitly, because both are the kind of fix that appears to work for unrelated reasons and then wastes an afternoon.</p>
-
-          <h2 class="section">what is actually happening</h2>
-
-          <p>WSL 2 runs inside a lightweight virtual machine. In NAT mode — the default — Windows talks to that VM over a private virtual network on the <code>vEthernet (WSL)</code> adapter, using a subnet picked at random on each restart, something like <code>172.23.160.0/20</code>. Windows forwards the VM's traffic outward and routes the replies back over that subnet.</p>
-
-          <p>Hub mode, meanwhile, means <em>all</em> traffic goes through the tunnel. And unless the gateway explicitly enables <code>exclude_local_networks_in_hub_mode</code> — which is off by default — "all" includes the networks your machine is directly attached to. The client has no reason to think the WSL link is special. It is a local network, so in it goes.</p>
-
-          <p>Concretely, on connect the client:</p>
-
-          <ul>
-            <li>adds <strong>two routes, each half the size of the WSL subnet</strong> — two <code>/21</code>s covering one <code>/20</code> — pointing at the VPN adapter;</li>
-            <li>adds host routes on the VPN adapter for the Windows end of the link (<code>172.23.160.1/32</code>) and for the subnet's broadcast address, with a better metric than the originals.</li>
-          </ul>
-
-          <p>And here is the whole bug in one sentence: <strong>Windows always prefers the most specific matching route, and a <code>/21</code> is more specific than a <code>/20</code>.</strong></p>
-
-          <p>Note what that does to the traffic. WSL's outbound packets still leave the machine — the VM's own routing is untouched. It is the <em>return path</em> that breaks, because replies addressed back into the WSL subnet now match a <code>/21</code> aimed at the tunnel. They go in and never come out. From inside WSL this is indistinguishable from the internet having quietly stopped existing, which is exactly why the symptom is so misleading.</p>
-
-          <p>Splitting a subnet into two halves rather than matching it exactly is a neat trick, incidentally: it guarantees a more specific match without needing to know the original prefix length.</p>
-
-          <h2 class="section">seeing it for yourself</h2>
-
-          <p>The client writes its route operations to <code>trac.log</code>, in hex, as <code>&lt;destination, mask, next hop, interface index, metric&gt;</code>. Decoding one line is enough to confirm the diagnosis — <code>ac17a000</code> is <code>172.23.160.0</code> and <code>fffff800</code> is a <code>/21</code>:</p>
-
-<pre><code>[vna_rtm]  &lt;ac17a000, fffff800, 0a000019, 13, 1&gt;   # 172.23.160.0/21 -&gt; VPN adapter
-[vna_rtm] vnartm_perform_route_op: ADDED</code></pre>
-
-          <p>The two settings behind the behaviour are in the same log: <code>neo_route_all_traffic_through_gateway = true</code> is hub mode, and <code>exclude_local_networks_in_hub_mode = false</code> is the part that drags your local networks along with it.</p>
-
-          <h2 class="section">mirrored mode does not save you</h2>
-
-          <p>The obvious escape hatch is <code>networkingMode=mirrored</code>, where WSL gets its own copy of the host's adapters — including the Check Point one, with the correct Office Mode address and routes. Its routing table is right.</p>
-
-          <p>It still doesn't work, and this one can't be fixed from the outside. Packets sent into that adapter go unanswered; in testing, hundreds went out and only ARP replies came back. The client's virtual adapter works by trapping traffic from Windows' own network stack, and mirrored-mode WSL hands it frames through the Hyper-V switch instead, where they are dropped. This is tracked upstream as <a href="https://github.com/microsoft/WSL/issues/13426">microsoft/WSL#13426</a>.</p>
-
-          <p>So NAT mode plus a route repair is not a workaround chosen over a cleaner option. It is the only layer left where you have any leverage.</p>
-
-          <h2 class="section">the fix</h2>
-
-          <p>Stay on NAT mode with DNS tunneling in <code>%UserProfile%\.wslconfig</code>:</p>
-
-<pre><code>[wsl2]
-networkingMode=nat
-dnsTunneling=true</code></pre>
-
-          <p>Then, after the VPN connects, delete the offending routes. The script in the repo does this properly rather than with hardcoded addresses — it discovers the current WSL subnet (remember, it changes on every restart), removes only Check Point routes that fall entirely inside it, restores the host route for the Windows end of the link if it went missing, and re-checks 30 seconds later in case the client puts them back.</p>
-
-<pre><code>powershell -ExecutionPolicy Bypass -File .\src\Fix-WslCheckPointRoutes.ps1 -WhatIf</code></pre>
-
-          <p><code>-WhatIf</code> needs no admin rights and changes nothing, so it doubles as the diagnostic: if it lists two <code>/21</code>s inside your WSL subnet, this note is about your problem. If it reports no overlap, it isn't.</p>
-
-          <p>The routes come back on every connect, so there is also an installer that registers a scheduled task firing on Windows' "new network connected" event — which covers both connecting and reconnecting after sleep. Full instructions, limitations and security notes are in the <a href="https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix">repository README</a>.</p>
-
-          <p>Two things worth being clear about, since this is VPN-adjacent: your WSL traffic still goes through the tunnel — the only thing being repaired is a private link that exists entirely inside your own PC — and the changes live in the active route table only, so they evaporate when the VPN disconnects or Windows restarts.</p>
-
-          <h2 class="section">the fix you should prefer, if you can get it</h2>
-
-          <p>Everything above is client-side work to undo a server-side decision. If you have any influence over the gateway, the real fix is to set <code>exclude_local_networks_in_hub_mode</code> to <code>true</code> or <code>client_decide</code> in <code>trac_client_1.ttm</code> and install policy. With <code>client_decide</code>, users get a checkbox and can make the call themselves.</p>
-
-          <p>Two honest caveats. Check Point's documentation doesn't say whether virtual adapters like <code>vEthernet (WSL)</code> count as local networks — the client log shows it treating the WSL subnet exactly like a physical LAN, so it very probably applies, but that is inference, not a documented guarantee. And if the network behind the VPN overlaps your home LAN's address range, excluding local networks will make those corporate addresses unreachable instead.</p>
-
-          <p>Which is the usual shape of this kind of problem: the clean fix needs someone else's cooperation, and the one you can actually deploy today is four routes and a scheduled task.</p>
-
-          <h2 class="section">references</h2>
-          <ul>
-            <li><a href="https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix">mihai-valentin/wsl-checkpoint-vpn-fix</a> — the scripts, tests and full write-up (MIT)</li>
-            <li><a href="https://github.com/microsoft/WSL/issues/13426">microsoft/WSL#13426</a> — Check Point VPN and WSL 2 in mirrored mode</li>
-            <li><a href="https://github.com/microsoft/WSL/issues/4246">microsoft/WSL#4246</a> — Check Point VPN breaks WSL 2 connectivity</li>
-            <li><a href="https://learn.microsoft.com/en-us/windows/wsl/networking">Accessing network applications with WSL</a> — NAT, mirrored mode, DNS tunneling</li>
-            <li><a href="https://sc1.checkpoint.com/documents/RemoteAccessClients_forWindows_AdminGuide/Content/Topics-RA-VPN-for-Win/Excluding-Local-Networks-from-Hub-Mode.htm">Check Point — Excluding Local Networks from Hub Mode</a></li>
-          </ul>
-
-          <p class="note-meta">Tested on Windows 11 25H2 (build 26200), WSL 2.6.3, Ubuntu 22.04, Check Point Endpoint Security VPN build 98.61, gateway in hub mode with Office Mode. Unofficial and unaffiliated with Check Point or Microsoft.</p>
-        </div>
-
-        <footer class="note-footer">
-          <p>← <a href="../">all notes</a> · <a href="../../">xlnf</a> · found this wrong or incomplete? <a href="mailto:mihaivalentin373@gmail.com">tell me</a></p>
-        </footer>
-      </article>
-    </div>
-  </main>
-
-  <button id="scroll-top" type="button" aria-label="scroll to top" hidden>↑ top</button>
-
-  <footer class="site-footer">
-    <div class="container">
-      © XLNF · all rights reversed
-    </div>
-  </footer>
+<p>XLNF has moved to <strong>xlnf.dev</strong>.</p>
+<p>This page is now at <a href="https://xlnf.dev/notes/wsl-2-check-point-vpn-hub-mode/">https://xlnf.dev/notes/wsl-2-check-point-vpn-hub-mode/</a>.</p>
+<p class="muted">Redirecting automatically. Update your bookmarks — this address is the old location and will not be kept forever.</p>
 </body>
 </html>
