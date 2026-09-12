@@ -23,6 +23,7 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 - `notes/` — the notes layer: technical write-ups, built for search discoverability. `notes/index.html` is the listing; each note is `notes/<slug>/index.html` so the URL is a clean `/notes/<slug>/` with no server config. See [Adding a note](#adding-a-note).
 - `sitemap.xml` — hand-maintained; **every new page needs an entry**. There is no build step to generate it.
 - `robots.txt` — present for intent, but see the caveat under [SEO](#seo).
+- `check-notes.py` — dev-time consistency check for the notes layer; not served, not part of a build. Run it after adding a note.
 - `assets/js/decoder.js` — XLNF backronym list + random pick + re-roll on click/Enter
 - `assets/js/theme.js` — dark/light toggle with `localStorage` persistence
 - `assets/js/contact.js` — AJAX submit of `#contact-form` to Formspree (endpoint `mrerljne`); includes honeypot
@@ -37,8 +38,9 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 1. `mkdir notes/<slug>/` and write `index.html`. Copy the most recent note as the template — the head block carries a lot of required plumbing. Pick a slug that reads as a search query, not as a filename.
 2. Update in the note's `<head>`: `<title>`, `meta description` (~155 chars), `link rel=canonical`, the `og:`/`twitter:` pairs, and both JSON-LD blocks (`TechArticle` + `BreadcrumbList`).
 3. Add the note to **three** places or it stays invisible: `notes/index.html` (the list **and** the `blogPost` array in its JSON-LD), `sitemap.xml`, and `llms.txt`.
-4. Optionally link it from the `notes` section of `index.html`.
-5. Preview locally, then check the rendered page with Google's Rich Results Test before announcing it anywhere.
+4. Optionally link it from the `notes` section of `index.html` — that list shows the three newest.
+5. **Run `python3 check-notes.py`.** It fails if a note is missing from any of the three registries, if its canonical URL doesn't match its path, if a title or meta description is absent, or if any JSON-LD block won't parse. It also catches the reverse — a sitemap or `llms.txt` entry pointing at a note directory that no longer exists. Step 3 is easy to half-finish and the failure is silent, so don't skip this.
+6. Preview locally, then check the rendered page with Google's Rich Results Test before announcing it anywhere.
 
 Write original prose. Do not paste a project's README into a note: two copies of the same text on two domains compete with each other, and the note should be the *story* — what broke, what the wrong theories were, why the real cause is what it is — with the repo holding the instructions.
 

@@ -38,10 +38,53 @@
     "blogPost": [
       {
         "@type": "TechArticle",
+        "headline": "Giving Claude Code a map of your projects",
+        "url": "https://mihai-valentin.github.io/xlnf/notes/giving-claude-code-a-map-of-your-projects/",
+        "datePublished": "2026-09-12",
+        "author": {
+          "@type": "Person",
+          "name": "Valentin Mihai"
+        }
+      },
+      {
+        "@type": "TechArticle",
+        "headline": "Surviving context compaction with a handoff doc",
+        "url": "https://mihai-valentin.github.io/xlnf/notes/surviving-context-compaction-with-a-handoff-doc/",
+        "datePublished": "2026-09-12",
+        "author": {
+          "@type": "Person",
+          "name": "Valentin Mihai"
+        }
+      },
+      {
+        "@type": "TechArticle",
         "headline": "WSL 2 loses all networking under Check Point VPN hub mode",
         "url": "https://mihai-valentin.github.io/xlnf/notes/wsl-2-check-point-vpn-hub-mode/",
         "datePublished": "2026-09-12",
-        "author": { "@type": "Person", "name": "Valentin Mihai" }
+        "author": {
+          "@type": "Person",
+          "name": "Valentin Mihai"
+        }
+      },
+      {
+        "@type": "TechArticle",
+        "headline": "cdp: jumping to project directories by label, not by guess",
+        "url": "https://mihai-valentin.github.io/xlnf/notes/cdp-jumping-to-project-directories-by-label/",
+        "datePublished": "2026-09-12",
+        "author": {
+          "@type": "Person",
+          "name": "Valentin Mihai"
+        }
+      },
+      {
+        "@type": "TechArticle",
+        "headline": "Running WSL shell functions from PowerShell",
+        "url": "https://mihai-valentin.github.io/xlnf/notes/running-wsl-shell-functions-from-powershell/",
+        "datePublished": "2026-09-12",
+        "author": {
+          "@type": "Person",
+          "name": "Valentin Mihai"
+        }
       }
     ]
   }
@@ -105,6 +148,28 @@
 
       <ul class="note-list">
         <li>
+          <h2><a href="giving-claude-code-a-map-of-your-projects/">Giving Claude Code a map of your projects</a></h2>
+          <p class="note-meta"><time datetime="2026-09-12">2026-09-12</time> · ~5 min</p>
+          <p>An agent rooted at project A knows nothing about project B, so you paste absolute paths forever. Writing them into the project's config instead fails for four reasons, and the fourth — a stale line can't know it's stale — is the one that has to be answered with behaviour, not architecture.</p>
+          <ul class="tags">
+            <li>claude-code</li>
+            <li>developer-tools</li>
+            <li>multi-repo</li>
+            <li>plugins</li>
+          </ul>
+        </li>
+        <li>
+          <h2><a href="surviving-context-compaction-with-a-handoff-doc/">Surviving context compaction with a handoff doc</a></h2>
+          <p class="note-meta"><time datetime="2026-09-12">2026-09-12</time> · ~6 min</p>
+          <p>Compaction is lossy in a predictable direction: it keeps what happened and drops what it cost to learn. One filter — could the next session recover this from git log in under a minute? — decides what belongs in the doc, and one rule stops it rotting into a confident lie.</p>
+          <ul class="tags">
+            <li>claude-code</li>
+            <li>ai-agents</li>
+            <li>context-window</li>
+            <li>documentation</li>
+          </ul>
+        </li>
+        <li>
           <h2><a href="wsl-2-check-point-vpn-hub-mode/">WSL 2 loses all networking under Check Point VPN hub mode</a></h2>
           <p class="note-meta"><time datetime="2026-09-12">2026-09-12</time> · ~6 min</p>
           <p>Connect the VPN and WSL stops reaching anything while Windows carries on fine. Names still resolve, so it looks like DNS and isn't. The client splits the WSL subnet into two halves pointed at the tunnel, and a <code>/21</code> beats a <code>/20</code>.</p>
@@ -112,6 +177,28 @@
             <li>wsl-2</li>
             <li>check-point-vpn</li>
             <li>routing</li>
+            <li>windows</li>
+          </ul>
+        </li>
+        <li>
+          <h2><a href="cdp-jumping-to-project-directories-by-label/">cdp: jumping to project directories by label, not by guess</a></h2>
+          <p class="note-meta"><time datetime="2026-09-12">2026-09-12</time> · ~4 min</p>
+          <p>Directory jumpers rank by frequency, which is inference, and leaves nowhere to record that arriving somewhere usually means starting three processes. Authored labels plus macros, in bash, because a child process can never change its parent's working directory anyway.</p>
+          <ul class="tags">
+            <li>bash</li>
+            <li>cli</li>
+            <li>developer-tools</li>
+            <li>tmux</li>
+          </ul>
+        </li>
+        <li>
+          <h2><a href="running-wsl-shell-functions-from-powershell/">Running WSL shell functions from PowerShell</a></h2>
+          <p class="note-meta"><time datetime="2026-09-12">2026-09-12</time> · ~3 min</p>
+          <p><code>wsl project-jump api</code> reports <em>command not found</em> for a command that works fine inside WSL, because non-interactive Bash never reads <code>~/.bashrc</code>. The obvious fix collides with PowerShell's argument marshalling, so the fragile part gets designed out instead.</p>
+          <ul class="tags">
+            <li>wsl</li>
+            <li>powershell</li>
+            <li>bash</li>
             <li>windows</li>
           </ul>
         </li>

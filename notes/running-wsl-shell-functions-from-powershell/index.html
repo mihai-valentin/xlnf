@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Running WSL shell functions from PowerShell · XLNF</title>
+  <meta name="description" content="wsl some-command fails for anything defined in ~/.bashrc, because non-interactive Bash never reads it. Why the obvious fix breaks, and what to do instead.">
+  <link rel="canonical" href="https://mihai-valentin.github.io/xlnf/notes/running-wsl-shell-functions-from-powershell/">
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <meta name="author" content="Valentin Mihai">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="XLNF">
+  <meta property="og:title" content="Running WSL shell functions from PowerShell">
+  <meta property="og:description" content="'command not found' for something that works fine inside WSL. Non-interactive Bash never reads ~/.bashrc — and the obvious fix collides with PowerShell argument marshalling.">
+  <meta property="og:url" content="https://mihai-valentin.github.io/xlnf/notes/running-wsl-shell-functions-from-powershell/">
+  <meta property="article:published_time" content="2026-09-12">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Running WSL shell functions from PowerShell">
+  <meta name="twitter:description" content="'command not found' for something that works fine inside WSL. Non-interactive Bash never reads ~/.bashrc — and the obvious fix collides with PowerShell argument marshalling.">
+
+  <link rel="alternate" type="text/markdown" href="../../llms.txt" title="llms.txt">
+  <link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/notes.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Running WSL shell functions from PowerShell",
+    "description": "wsl some-command fails for anything defined in ~/.bashrc, because non-interactive Bash never reads it. Why the obvious fix breaks, and what to do instead.",
+    "datePublished": "2026-09-12",
+    "dateModified": "2026-09-12",
+    "inLanguage": "en",
+    "url": "https://mihai-valentin.github.io/xlnf/notes/running-wsl-shell-functions-from-powershell/",
+    "mainEntityOfPage": "https://mihai-valentin.github.io/xlnf/notes/running-wsl-shell-functions-from-powershell/",
+    "author": {
+      "@type": "Person",
+      "name": "Valentin Mihai",
+      "url": "https://github.com/mihai-valentin"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "XLNF",
+      "url": "https://mihai-valentin.github.io/xlnf/"
+    },
+    "about": [
+      {
+        "@type": "Thing",
+        "name": "Windows Subsystem for Linux"
+      },
+      {
+        "@type": "Thing",
+        "name": "PowerShell"
+      },
+      {
+        "@type": "Thing",
+        "name": "Bash"
+      }
+    ],
+    "keywords": "WSL, wsl.exe command not found, shell function, bashrc, PowerShell, interactive Bash",
+    "codeRepository": "https://github.com/mihai-valentin/wsly",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "XLNF",
+        "item": "https://mihai-valentin.github.io/xlnf/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Notes",
+        "item": "https://mihai-valentin.github.io/xlnf/notes/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Running WSL shell functions from PowerShell"
+      }
+    ]
+  }
+  </script>
+
+  <script>
+    // FOUC guard: apply persisted theme before first paint.
+    (function () {
+      try {
+        var t = localStorage.getItem("xlnf-theme");
+        if (!t) {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://eu.i.posthog.com" crossorigin>
+  <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
+  <script defer src="../../assets/js/posthog.js"></script>
+  <script defer src="../../assets/js/analytics.js"></script>
+  <script defer src="../../assets/js/theme.js"></script>
+  <script defer src="../../assets/js/scroll-top.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <p class="prompt"><span class="pwd">~/xlnf/notes</span> $ cat running-wsl-shell-functions-from-powershell<span class="cursor">_</span></p>
+      <div class="header-meta">
+        <span><a href="../../">XLNF</a> :: <a href="../">notes</a></span>
+        <button id="theme-toggle" type="button" aria-label="toggle theme">☀</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <ol>
+          <li><a href="../../">xlnf</a></li>
+          <li><a href="../">notes</a></li>
+          <li aria-current="page">running-wsl-shell-functions-from-powershell</li>
+        </ol>
+      </nav>
+
+      <article>
+        <header class="note-header">
+          <h1>Running WSL shell functions from PowerShell</h1>
+          <p class="note-meta">
+            <time datetime="2026-09-12">2026-09-12</time> ·
+            Valentin Mihai ·
+            ~3 min read
+          </p>
+          <ul class="tags">
+            <li>wsl</li>
+            <li>powershell</li>
+            <li>bash</li>
+            <li>windows</li>
+          </ul>
+        </header>
+
+        <div class="note-body">
+<div class="tldr">
+  <span class="tldr-label">TL;DR</span>
+  <p><code>wsl some-command</code> fails for anything defined in <code>~/.bashrc</code>, because a non-interactive shell never reads it. <code>wsly</code> runs the command in a genuinely interactive Bash session — and leaves you sitting in it when the command succeeds.</p>
+  <p><a href="https://github.com/mihai-valentin/wsly">github.com/mihai-valentin/wsly</a> · PowerShell, MIT</p>
+</div>
+
+<h2 class="section">the error that starts it</h2>
+
+<pre><code>PS&gt; wsl project-jump api
+/bin/bash: line 1: project-jump: command not found</code></pre>
+
+<p>The command exists. It works perfectly when you type it inside WSL. It is simply not a program — it is a shell function, defined in <code>~/.bashrc</code>.</p>
+
+<p>And <code>wsl &lt;command&gt;</code> starts a <em>non-interactive</em> shell. Non-interactive Bash does not read <code>~/.bashrc</code>. So the function does not exist, and neither does anything else your startup files set up: aliases, <code>nvm</code>, <code>pyenv</code>, <code>direnv</code> hooks, any tool that installs itself by appending a line to your profile.</p>
+
+<p>This is correct Bash behaviour, documented and deliberate. It is just a poor fit for "run the thing I normally run".</p>
+
+<h2 class="section">the second half of the problem</h2>
+
+<p>There is a companion annoyance. For a project-jumping command, succeeding and then exiting is useless — the whole point was to <em>end up there</em>. A command that changes directory and then disposes of the shell it changed has achieved nothing.</p>
+
+<p>So the behaviour wanted is: load the interactive environment, run the command, and if it succeeded, <strong>hand me the shell</strong>. Which is why this is a launcher and not a one-line alias.</p>
+
+<h2 class="section">why it isn't a one-liner</h2>
+
+<p>The obvious fix is to invoke Bash as interactive and pass it your command as program text. That runs into PowerShell's native-command argument marshalling — PowerShell rewrites arguments on their way to a native executable, and passing a fragment of shell source through that layer means quoting rules from two shells fighting over the same string. It works until an argument contains a space, or a quote, or a dollar sign.</p>
+
+<p>So <code>wsly</code> doesn't pass shell source at all. It ships a small Bash helper, translates that helper's path for the active WSL distro, starts interactive Bash with it, and passes your command as <strong>individual arguments</strong>. The helper sources <code>~/.bashrc</code> explicitly, runs the command, and opens a shell on success.</p>
+
+<p>The useful property: no string is ever parsed as code by two shells in sequence. Arguments stay arguments. The fragile part of the problem is designed out rather than escaped around.</p>
+
+<h2 class="section">scope</h2>
+
+<p>It is one PowerShell file plus that helper, with no dependencies beyond WSL itself, and an optional completion bridge so Tab still works from PowerShell. It needs a real distro — internal ones like <code>docker-desktop</code> ship no Bash and are explicitly unsupported, which is the kind of thing worth stating rather than letting someone discover.</p>
+
+<p>It is also, incidentally, the first tool here written start to finish by a coding agent other than Claude. Small, sharply-scoped, one genuinely fiddly constraint in the middle — which turns out to be a good shape for that.</p>
+        </div>
+
+        <footer class="note-footer">
+          <p>← <a href="../">all notes</a> · <a href="../../">xlnf</a> · found this wrong or incomplete? <a href="mailto:mihaivalentin373@gmail.com">tell me</a></p>
+        </footer>
+      </article>
+    </div>
+  </main>
+
+  <button id="scroll-top" type="button" aria-label="scroll to top" hidden>↑ top</button>
+
+  <footer class="site-footer">
+    <div class="container">
+      © XLNF · all rights reversed
+    </div>
+  </footer>
+</body>
+</html>
