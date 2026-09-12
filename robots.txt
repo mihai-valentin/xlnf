@@ -1,0 +1,7 @@
+# XLNF — https://mihai-valentin.github.io/xlnf/
+# Everything here is public and meant to be indexed.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://mihai-valentin.github.io/xlnf/sitemap.xml

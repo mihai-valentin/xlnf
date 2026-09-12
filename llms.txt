@@ -6,6 +6,13 @@
 
 - [Homepage](index.html): main card-site, terminal aesthetic, contact form.
 - [LLM profile](llm.html): structured profile for LLMs and agents — entity metadata, engagement models, operating approach, portfolio-wide stack choices.
+- [Notes index](notes/): technical write-ups — debugging stories, tooling trade-offs, documented fixes.
+
+## Notes
+
+Short, specific technical write-ups. Each note links to the repository holding the code it describes.
+
+- [WSL 2 loses all networking under Check Point VPN hub mode](notes/wsl-2-check-point-vpn-hub-mode/) (2026-09-12): the Check Point Endpoint Security VPN in hub mode pulls locally attached networks into the tunnel, including the private Windows-to-WSL link. It installs two routes covering half the WSL subnet each, and Windows prefers the more specific match, so a /21 beats WSL's /20 and return traffic is swallowed. Names still resolve via DNS tunneling, which makes it look like a DNS fault. Not DNS, not MTU, and not fixable via mirrored mode. Fix: delete those routes (repo: https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix).
 
 ## Entity
 

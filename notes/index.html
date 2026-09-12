@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes · XLNF</title>
+  <meta name="description" content="Write-ups from the XLNF lab — debugging stories, tooling decisions and the occasional fix worth documenting. Short, technical, and specific.">
+  <link rel="canonical" href="https://mihai-valentin.github.io/xlnf/notes/">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="XLNF">
+  <meta property="og:title" content="Notes · XLNF">
+  <meta property="og:description" content="Write-ups from the XLNF lab — debugging stories, tooling decisions and the occasional fix worth documenting.">
+  <meta property="og:url" content="https://mihai-valentin.github.io/xlnf/notes/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Notes · XLNF">
+  <meta name="twitter:description" content="Write-ups from the XLNF lab — debugging stories, tooling decisions and the occasional fix worth documenting.">
+
+  <link rel="alternate" type="text/markdown" href="../llms.txt" title="llms.txt">
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/notes.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "XLNF Notes",
+    "description": "Write-ups from the XLNF lab — debugging stories, tooling decisions and fixes worth documenting.",
+    "url": "https://mihai-valentin.github.io/xlnf/notes/",
+    "inLanguage": "en",
+    "publisher": {
+      "@type": "Organization",
+      "name": "XLNF",
+      "url": "https://mihai-valentin.github.io/xlnf/"
+    },
+    "blogPost": [
+      {
+        "@type": "TechArticle",
+        "headline": "WSL 2 loses all networking under Check Point VPN hub mode",
+        "url": "https://mihai-valentin.github.io/xlnf/notes/wsl-2-check-point-vpn-hub-mode/",
+        "datePublished": "2026-09-12",
+        "author": { "@type": "Person", "name": "Valentin Mihai" }
+      }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "XLNF", "item": "https://mihai-valentin.github.io/xlnf/" },
+      { "@type": "ListItem", "position": 2, "name": "Notes" }
+    ]
+  }
+  </script>
+
+  <script>
+    // FOUC guard: apply persisted theme before first paint.
+    (function () {
+      try {
+        var t = localStorage.getItem("xlnf-theme");
+        if (!t) {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://eu.i.posthog.com" crossorigin>
+  <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
+  <script defer src="../assets/js/posthog.js"></script>
+  <script defer src="../assets/js/analytics.js"></script>
+  <script defer src="../assets/js/theme.js"></script>
+  <script defer src="../assets/js/scroll-top.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <p class="prompt"><span class="pwd">~/xlnf/notes</span> $ ls -lt<span class="cursor">_</span></p>
+      <div class="header-meta">
+        <span><a href="../">XLNF</a> :: notes</span>
+        <button id="theme-toggle" type="button" aria-label="toggle theme">☀</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <ol>
+          <li><a href="../">xlnf</a></li>
+          <li aria-current="page">notes</li>
+        </ol>
+      </nav>
+
+      <h1>Notes</h1>
+      <p class="subtitle">// things worth writing down once, so nobody has to rediscover them.</p>
+
+      <p>Write-ups from the lab: bugs that took a while to corner, tooling decisions and their trade-offs, and the occasional fix that was too annoying to find the first time. Specific rather than general — if a note can be summarised as "it depends", it doesn't get written.</p>
+
+      <ul class="note-list">
+        <li>
+          <h2><a href="wsl-2-check-point-vpn-hub-mode/">WSL 2 loses all networking under Check Point VPN hub mode</a></h2>
+          <p class="note-meta"><time datetime="2026-09-12">2026-09-12</time> · ~6 min</p>
+          <p>Connect the VPN and WSL stops reaching anything while Windows carries on fine. Names still resolve, so it looks like DNS and isn't. The client splits the WSL subnet into two halves pointed at the tunnel, and a <code>/21</code> beats a <code>/20</code>.</p>
+          <ul class="tags">
+            <li>wsl-2</li>
+            <li>check-point-vpn</li>
+            <li>routing</li>
+            <li>windows</li>
+          </ul>
+        </li>
+      </ul>
+
+      <p class="note-meta" style="margin-top:22px">More as they get written. Code for most of this lives at <a href="https://github.com/mihai-valentin">github.com/mihai-valentin</a>.</p>
+    </div>
+  </main>
+
+  <button id="scroll-top" type="button" aria-label="scroll to top" hidden>↑ top</button>
+
+  <footer class="site-footer">
+    <div class="container">
+      <a href="../">← xlnf</a> · © XLNF · all rights reversed
+    </div>
+  </footer>
+</body>
+</html>
