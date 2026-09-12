@@ -19,4 +19,7 @@ posthog.init('phc_CB5LFj3crsxvKs9tn7wVoc5TpwEBrPVyPkhGUseaKeEw', {
   autocapture: false,               // manual events only
   capture_pageview: true,
   disable_session_recording: true,
+  disable_surveys: true,            // we ship no surveys — skip surveys.js
+  capture_dead_clicks: false,       // autocapture is off; skip dead-clicks-autocapture.js
+  capture_performance: false,       // skip web-vitals-with-attribution.js
 });

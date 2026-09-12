@@ -42,6 +42,7 @@
   <link rel="preconnect" href="https://eu-assets.i.posthog.com" crossorigin>
   <link rel="dns-prefetch" href="https://formspree.io">
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/JetBrainsMono-Regular.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/JetBrainsMono-Bold.woff2" crossorigin>
   <style>
     /* XLNF — inlined styles (formerly assets/css/main.css). Single source of truth. */
     @font-face {
@@ -207,6 +208,9 @@
       autocapture: false,               // manual events only
       capture_pageview: true,
       disable_session_recording: true,
+      disable_surveys: true,            // we ship no surveys — skip surveys.js
+      capture_dead_clicks: false,       // autocapture is off; skip dead-clicks-autocapture.js
+      capture_performance: false,       // skip web-vitals-with-attribution.js
     });
   </script>
   <script defer src="assets/js/analytics.js"></script>
