@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify every note is registered everywhere it needs to be.
 
-This site has no build step, so adding a note means editing four files by hand.
+This site has no build step, so adding a note means editing five files by hand.
 Forget one and the note is published but invisible — and the failure is silent,
 which is the worst kind. This checks for that instead of trusting memory.
 
@@ -12,10 +12,11 @@ Checks per note directory under notes/:
   2. present in the blogPost[] array of notes/index.html's JSON-LD
   3. present in sitemap.xml
   4. present in llms.txt
-  5. its own canonical URL matches its actual path
-  6. has a title, a meta description, and parseable JSON-LD
+  5. present in llm.html (the list AND its ItemList JSON-LD)
+  6. its own canonical URL matches its actual path
+  7. has a title, a meta description, and parseable JSON-LD
 Also flags entries in those files that point at a note directory which no
-longer exists.
+longer exists, and an ItemList numberOfItems that disagrees with reality.
 """
 import glob
 import json
@@ -46,6 +47,27 @@ def main():
     index = read("notes/index.html")
     sitemap = read("sitemap.xml")
     llms = read("llms.txt")
+    llm_page = read("llm.html")
+
+    # the ItemList in llm.html — the machine-readable half of the agent surface
+    listed_for_agents = set()
+    for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', llm_page, re.S):
+        try:
+            data = json.loads(block)
+        except json.JSONDecodeError as e:
+            problems.append(f"llm.html: unparseable JSON-LD ({e})")
+            continue
+        if data.get("@type") == "ItemList":
+            items = data.get("itemListElement", [])
+            for item in items:
+                m = re.search(r"/notes/([^/]+)/", item.get("url", ""))
+                if m:
+                    listed_for_agents.add(m.group(1))
+            declared = data.get("numberOfItems")
+            if declared is not None and declared != len(items):
+                problems.append(
+                    f"llm.html: ItemList numberOfItems is {declared} but it holds {len(items)} items"
+                )
 
     # the blogPost array, from the Blog JSON-LD block
     posted = set()
@@ -72,6 +94,10 @@ def main():
             problems.append(f"{slug}: missing from sitemap.xml")
         if f"notes/{slug}/" not in llms:
             problems.append(f"{slug}: missing from llms.txt")
+        if f'href="notes/{slug}/"' not in llm_page:
+            problems.append(f"{slug}: not linked from the list in llm.html")
+        if slug not in listed_for_agents:
+            problems.append(f"{slug}: missing from the ItemList JSON-LD in llm.html")
 
         canonical = re.search(r'<link rel="canonical" href="([^"]+)"', page)
         if not canonical:
@@ -105,6 +131,11 @@ def main():
     for ref in set(re.findall(rf"\(notes/{SLUG}/\)", llms)):
         if ref not in slugs:
             problems.append(f"llms.txt references notes/{ref}/ which does not exist")
+    for ref in set(re.findall(rf'href="notes/{SLUG}/"', llm_page)):
+        if ref not in slugs:
+            problems.append(f"llm.html references notes/{ref}/ which does not exist")
+    for ref in listed_for_agents - set(slugs):
+        problems.append(f"llm.html ItemList references notes/{ref}/ which does not exist")
 
     print(f"checked {len(slugs)} note(s): " + ", ".join(slugs))
 
@@ -116,4 +147,4 @@ if __name__ == "__main__":
         for p in problems:
             print(f"  - {p}")
         sys.exit(1)
-    print("all notes registered in notes/index.html, sitemap.xml and llms.txt")
+    print("all notes registered in notes/index.html, sitemap.xml, llms.txt and llm.html")

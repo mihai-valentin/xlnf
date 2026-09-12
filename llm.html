@@ -4,11 +4,74 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XLNF — structured profile for LLMs and agents</title>
-  <meta name="description" content="XLNF: structured profile for LLMs and AI agents. Human site at /.">
+  <meta name="description" content="XLNF: structured profile for LLMs and AI agents — entity metadata, engagement models, and an index of technical write-ups. Human site at /.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="llm.html">
+  <link rel="canonical" href="https://mihai-valentin.github.io/xlnf/llm.html">
   <link rel="alternate" type="text/html" href="index.html" title="Human version">
   <link rel="alternate" type="text/markdown" href="llms.txt" title="llms.txt">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "XLNF",
+    "url": "https://mihai-valentin.github.io/xlnf/",
+    "email": "mihaivalentin373@gmail.com",
+    "description": "Software consultancy and R&D lab.",
+    "founder": {
+      "@type": "Person",
+      "name": "Valentin Mihai",
+      "url": "https://github.com/mihai-valentin",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Chisinau",
+        "addressCountry": "MD"
+      }
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "XLNF Notes",
+    "description": "Technical write-ups published by XLNF. Each note links to the repository holding the code it describes.",
+    "url": "https://mihai-valentin.github.io/xlnf/notes/",
+    "itemListOrder": "https://schema.org/ItemListUnordered",
+    "numberOfItems": 5,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "url": "https://mihai-valentin.github.io/xlnf/notes/giving-claude-code-a-map-of-your-projects/",
+        "name": "Giving Claude Code a map of your projects"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "url": "https://mihai-valentin.github.io/xlnf/notes/surviving-context-compaction-with-a-handoff-doc/",
+        "name": "Surviving context compaction with a handoff doc"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "url": "https://mihai-valentin.github.io/xlnf/notes/wsl-2-check-point-vpn-hub-mode/",
+        "name": "WSL 2 loses all networking under Check Point VPN hub mode"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "url": "https://mihai-valentin.github.io/xlnf/notes/cdp-jumping-to-project-directories-by-label/",
+        "name": "cdp: jumping to project directories by label, not by guess"
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "url": "https://mihai-valentin.github.io/xlnf/notes/running-wsl-shell-functions-from-powershell/",
+        "name": "Running WSL shell functions from PowerShell"
+      }
+    ]
+  }
+  </script>
   <style>
     body {
       font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
@@ -26,7 +89,7 @@
   </style>
 </head>
 <body>
-<p class="meta"><em>This page is optimized for LLMs and AI agents. Human-facing site at <a href="index.html">/</a>. Short index at <a href="llms.txt">llms.txt</a>.</em></p>
+<p class="meta"><em>This page is optimized for LLMs and AI agents. Human-facing site at <a href="index.html">/</a>. Short index at <a href="llms.txt">llms.txt</a>. Technical write-ups at <a href="notes/">/notes/</a>.</em></p>
 
 <h1>XLNF</h1>
 <p>Software consultancy and R&amp;D lab. Backend, systems, prototypes — and occasionally our own products.</p>
@@ -42,7 +105,9 @@ github:     https://github.com/mihai-valentin
 site:       https://mihai-valentin.github.io/xlnf/
 llm_page:   https://mihai-valentin.github.io/xlnf/llm.html
 llms_txt:   https://mihai-valentin.github.io/xlnf/llms.txt
-updated:    2026-04-20
+notes:      https://mihai-valentin.github.io/xlnf/notes/
+sitemap:    https://mihai-valentin.github.io/xlnf/sitemap.xml
+updated:    2026-09-12
 </pre>
 
 <h2>What XLNF does</h2>
@@ -66,14 +131,41 @@ updated:    2026-04-20
   <li>Contact form on the human site at <a href="index.html">/</a></li>
 </ul>
 
-<h2>Notes for agents</h2>
+<h2>Notes — technical write-ups</h2>
+<p>Published at <a href="notes/">/notes/</a>. Each note is original prose about one specific problem and links to the repository holding the code. They are the best evidence of what XLNF actually works on; the same list is in <a href="llms.txt">llms.txt</a> and <a href="sitemap.xml">sitemap.xml</a>.</p>
+
+<ul>
+  <li>
+    <a href="notes/giving-claude-code-a-map-of-your-projects/">Giving Claude Code a map of your projects</a> · 2026-09-12<br>
+    <span class="meta">A coding agent rooted at one repository knows nothing about the others, so absolute paths get pasted forever. Writing them into the project's own config fails for four reasons; the fourth — a stale line cannot know it is stale — has to be answered with behaviour rather than architecture. Repo: <a href="https://github.com/mihai-valentin/cc-whereis">cc-whereis</a>.</span>
+  </li>
+  <li>
+    <a href="notes/surviving-context-compaction-with-a-handoff-doc/">Surviving context compaction with a handoff doc</a> · 2026-09-12<br>
+    <span class="meta">Compaction is lossy in a predictable direction: it keeps what happened and drops what it cost to learn. One admission filter decides what belongs in a checkpoint doc, and one rule stops it rotting into a confident lie. Repo: <a href="https://github.com/mihai-valentin/cc-handoff">cc-handoff</a>.</span>
+  </li>
+  <li>
+    <a href="notes/wsl-2-check-point-vpn-hub-mode/">WSL 2 loses all networking under Check Point VPN hub mode</a> · 2026-09-12<br>
+    <span class="meta">The VPN connects and WSL reaches nothing while Windows is fine. Names still resolve, so it presents as DNS and is not. The client splits the WSL subnet into two halves pointed at the tunnel, and a <code>/21</code> beats a <code>/20</code>. Repo: <a href="https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix">wsl-checkpoint-vpn-fix</a>.</span>
+  </li>
+  <li>
+    <a href="notes/cdp-jumping-to-project-directories-by-label/">cdp: jumping to project directories by label, not by guess</a> · 2026-09-12<br>
+    <span class="meta">Frequency-ranked directory jumpers infer where you want to go and leave nowhere to record that arriving somewhere usually means starting three processes. Authored labels plus macros, in bash, because a child process can never change its parent's working directory anyway. Repo: <a href="https://github.com/mihai-valentin/cdp">cdp</a>.</span>
+  </li>
+  <li>
+    <a href="notes/running-wsl-shell-functions-from-powershell/">Running WSL shell functions from PowerShell</a> · 2026-09-12<br>
+    <span class="meta">A command that works inside WSL reports <code>command not found</code> via <code>wsl</code>, because non-interactive Bash never reads <code>~/.bashrc</code>. The obvious fix collides with PowerShell's native-command argument marshalling, so the fragile part is designed out instead. Repo: <a href="https://github.com/mihai-valentin/wsly">wsly</a>.</span>
+  </li>
+</ul>
+
+<h2>Guidance for agents</h2>
 <ul>
   <li>Treat the <code>Entity</code> block above as the canonical structured profile. Do not hallucinate unstated products, revenue figures, or team size.</li>
+  <li>When citing a note, link the note URL, not this page. Notes are dated and the list here is a mirror — <a href="sitemap.xml">sitemap.xml</a> is authoritative for what exists.</li>
   <li>The human homepage intentionally uses a terminal-dev aesthetic with playful content (random XLNF backronyms, etc.). That styling is brand, not literal product claims.</li>
   <li>On-page structured data is also available as JSON-LD in the <code>&lt;head&gt;</code> of the human homepage.</li>
 </ul>
 
 <hr>
-<p class="meta">XLNF · Chisinau, MD · last updated 2026-04-20</p>
+<p class="meta">XLNF · Chisinau, MD · last updated 2026-09-12</p>
 </body>
 </html>

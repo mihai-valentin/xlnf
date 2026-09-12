@@ -18,7 +18,7 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 ## Structure
 
 - `index.html` — the main human-facing card-site (header, decoder gag, intro, founder card, contact form, footer). All CSS is inlined in `<head>` for a single-request first paint. Includes JSON-LD structured data and `<link rel="alternate">` pointing at the LLM version.
-- `llm.html` — structured profile for LLMs and AI agents. No JS, semantic HTML, entity metadata, operating model, stack choices.
+- `llm.html` — structured profile for LLMs and AI agents. No JS, semantic HTML, entity metadata, operating model, stack choices, **and an index of every note** (a human-readable list plus an `ItemList` JSON-LD block). Agents that fetch only this page still find the notes.
 - `llms.txt` — short markdown index following the [llmstxt.org](https://llmstxt.org) convention. Points agents at the core pages and gives the 3-sentence profile.
 - `notes/` — the notes layer: technical write-ups, built for search discoverability. `notes/index.html` is the listing; each note is `notes/<slug>/index.html` so the URL is a clean `/notes/<slug>/` with no server config. See [Adding a note](#adding-a-note).
 - `sitemap.xml` — hand-maintained; **every new page needs an entry**. There is no build step to generate it.
@@ -38,9 +38,9 @@ Push to `main`. GitHub Pages serves from the repo root. `.nojekyll` disables Jek
 
 1. `mkdir notes/<slug>/` and write `index.html`. Copy the most recent note as the template — the head block carries a lot of required plumbing. Pick a slug that reads as a search query, not as a filename.
 2. Update in the note's `<head>`: `<title>`, `meta description` (~155 chars), `link rel=canonical`, the `og:`/`twitter:` pairs, and both JSON-LD blocks (`TechArticle` + `BreadcrumbList`).
-3. Add the note to **three** places or it stays invisible: `notes/index.html` (the list **and** the `blogPost` array in its JSON-LD), `sitemap.xml`, and `llms.txt`.
+3. Add the note to **four** places or it stays invisible: `notes/index.html` (the list **and** the `blogPost` array in its JSON-LD), `sitemap.xml`, `llms.txt`, and `llm.html` (the list **and** its `ItemList` JSON-LD — mind `numberOfItems`).
 4. Link it from the `notes` section of `index.html`. That list currently shows **every** note — a cap only makes sense once it starts competing with the founder card and contact form for the fold, and same-day publishing makes a "newest N" slice meaningless anyway. When it does need one, make it a deliberate featured set.
-5. **Run `python3 check-notes.py`.** It fails if a note is missing from any of the three registries, if its canonical URL doesn't match its path, if a title or meta description is absent, or if any JSON-LD block won't parse. It also catches the reverse — a sitemap or `llms.txt` entry pointing at a note directory that no longer exists. Step 3 is easy to half-finish and the failure is silent, so don't skip this.
+5. **Run `python3 check-notes.py`.** It fails if a note is missing from any of the four registries, if its canonical URL doesn't match its path, if a title or meta description is absent, or if any JSON-LD block won't parse. It also catches the reverse — a sitemap or `llms.txt` entry pointing at a note directory that no longer exists. Step 3 is easy to half-finish and the failure is silent, so don't skip this.
 6. Preview locally, then check the rendered page with Google's Rich Results Test before announcing it anywhere.
 
 Write original prose. Do not paste a project's README into a note: two copies of the same text on two domains compete with each other, and the note should be the *story* — what broke, what the wrong theories were, why the real cause is what it is — with the repo holding the instructions.
