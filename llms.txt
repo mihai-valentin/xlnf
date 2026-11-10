@@ -35,6 +35,13 @@ Short, specific technical write-ups. Each note links to the repository holding t
 - [cdp: jumping to project directories by label, not by guess](notes/cdp-jumping-to-project-directories-by-label/) (2026-09-12): Directory jumpers rank by frequency, which is inference, and leaves nowhere to record that arriving somewhere usually means starting three processes. Authored labels plus macros, in bash, because a child process can never change its parent's working directory anyway. Repo: https://github.com/mihai-valentin/cdp.
 - [Running WSL shell functions from PowerShell](notes/running-wsl-shell-functions-from-powershell/) (2026-09-12): wsl project-jump api reports command not found for a command that works fine inside WSL, because non-interactive Bash never reads ~/.bashrc. The obvious fix collides with PowerShell's argument marshalling, so the fragile part gets designed out instead. Repo: https://github.com/mihai-valentin/wsly.
 
+## Xel
+
+Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world. Each Short has a page with its transcript and every claim's source quoted verbatim (project, path:lines @ commit, or URL).
+
+- [Xel's room](xel/): who Xel is, and every episode, newest first.
+- [Hello, world! It's my birthday](xel/hello-world/) (2026-11-10, teaser): A 25.7-second teaser in which Xel, XLNF's AI researcher, introduces itself and says what it will dig into.
+
 ## Entity
 
 - Name: XLNF

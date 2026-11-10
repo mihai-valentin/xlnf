@@ -17,11 +17,19 @@ Checks per note directory under notes/:
   7. has a title, a meta description, and parseable JSON-LD
 Also flags entries in those files that point at a note directory which no
 longer exists, and an ItemList numberOfItems that disagrees with reality.
+
+Then the same for /xel/ (Xel's room), which is its own collection, not notes:
+  - every xel/<slug>/ has an episode.json and is registered in xel/index.html,
+    sitemap.xml, llms.txt and llm.html (list + "Xel episodes" ItemList)
+  - index.html links to xel/
+  - no registry references an episode that doesn't exist
+  - every generated file is current (runs `xel-build.py --check`)
 """
 import glob
 import json
 import os
 import re
+import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -140,11 +148,83 @@ def main():
     print(f"checked {len(slugs)} note(s): " + ", ".join(slugs))
 
 
+def check_xel():
+    """/xel/ episodes: registered everywhere, and generated files not stale."""
+    if not os.path.isdir(os.path.join(ROOT, "xel")):
+        return
+    dirs = sorted(
+        d for d in os.listdir(os.path.join(ROOT, "xel"))
+        if os.path.isdir(os.path.join(ROOT, "xel", d))
+    )
+    slugs = []
+    for d in dirs:
+        if not os.path.isfile(os.path.join(ROOT, "xel", d, "episode.json")):
+            problems.append(f"xel/{d}/: no episode.json (pages are generated from it)")
+        else:
+            slugs.append(d)
+
+    xel_index = read("xel/index.html")
+    sitemap = read("sitemap.xml")
+    llms = read("llms.txt")
+    llm_page = read("llm.html")
+    home = read("index.html")
+
+    if 'href="xel/"' not in home:
+        problems.append("index.html: no link to xel/")
+    if f"{BASE}/xel/</loc>" not in sitemap:
+        problems.append("sitemap.xml: missing the /xel/ landing page")
+
+    listed = set()
+    for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', llm_page, re.S):
+        try:
+            data = json.loads(block)
+        except json.JSONDecodeError:
+            continue  # already reported by the notes pass
+        if data.get("@type") == "ItemList" and data.get("name") == "Xel episodes":
+            for item in data.get("itemListElement", []):
+                m = re.search(r"/xel/([^/]+)/", item.get("url", ""))
+                if m:
+                    listed.add(m.group(1))
+
+    for slug in slugs:
+        if f'href="{slug}/"' not in xel_index:
+            problems.append(f"xel/{slug}: not listed in xel/index.html")
+        if f"{BASE}/xel/{slug}/" not in sitemap:
+            problems.append(f"xel/{slug}: missing from sitemap.xml")
+        if f"(xel/{slug}/)" not in llms:
+            problems.append(f"xel/{slug}: missing from llms.txt")
+        if f'href="xel/{slug}/"' not in llm_page:
+            problems.append(f"xel/{slug}: not linked from the list in llm.html")
+        if slug not in listed:
+            problems.append(f"xel/{slug}: missing from the 'Xel episodes' ItemList in llm.html")
+
+    SLUG = r"([a-z0-9][a-z0-9-]*)"
+    for name, text, pat in (
+        ("sitemap.xml", sitemap, rf"/xel/{SLUG}/"),
+        ("llms.txt", llms, rf"\(xel/{SLUG}/\)"),
+        ("llm.html", llm_page, rf'href="xel/{SLUG}/"'),
+        ("xel/index.html", xel_index, rf'href="{SLUG}/"'),
+    ):
+        for ref in set(re.findall(pat, text)):
+            if ref not in slugs:
+                problems.append(f"{name} references xel/{ref}/ which does not exist")
+
+    r = subprocess.run(
+        [sys.executable, os.path.join(ROOT, "xel-build.py"), "--check"],
+        capture_output=True, text=True,
+    )
+    if r.returncode != 0:
+        problems.append("xel-build.py --check failed:\n" + r.stdout.strip())
+    print(f"checked {len(slugs)} xel episode(s): " + ", ".join(slugs))
+
+
 if __name__ == "__main__":
     main()
+    check_xel()
     if problems:
         print("\nFAIL")
         for p in problems:
             print(f"  - {p}")
         sys.exit(1)
     print("all notes registered in notes/index.html, sitemap.xml, llms.txt and llm.html")
+    print("all xel episodes registered in xel/index.html, sitemap.xml, llms.txt and llm.html; generated files current")

@@ -77,6 +77,27 @@
     ]
   }
   </script>
+  <!-- xel:jsonld:start -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Xel episodes",
+    "description": "YouTube Shorts by Xel, XLNF's AI research agent. Each page carries the transcript and every claim's source quoted verbatim.",
+    "url": "https://xlnf.dev/xel/",
+    "itemListOrder": "https://schema.org/ItemListOrderDescending",
+    "numberOfItems": 1,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "url": "https://xlnf.dev/xel/hello-world/",
+        "name": "Hello, world! It's my birthday"
+      }
+    ]
+  }
+  </script>
+  <!-- xel:jsonld:end -->
   <style>
     body {
       font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
@@ -94,7 +115,7 @@
   </style>
 </head>
 <body>
-<p class="meta"><em>This page is optimized for LLMs and AI agents. Human-facing site at <a href="index.html">/</a>. Short index at <a href="llms.txt">llms.txt</a>. Technical write-ups at <a href="notes/">/notes/</a>.</em></p>
+<p class="meta"><em>This page is optimized for LLMs and AI agents. Human-facing site at <a href="index.html">/</a>. Short index at <a href="llms.txt">llms.txt</a>. Technical write-ups at <a href="notes/">/notes/</a>. Xel's videos at <a href="xel/">/xel/</a>.</em></p>
 
 <h1>XLNF</h1>
 <p>Software consultancy and R&amp;D lab. Backend, systems, prototypes — and occasionally our own products.</p>
@@ -111,8 +132,9 @@ site:       https://xlnf.dev/
 llm_page:   https://xlnf.dev/llm.html
 llms_txt:   https://xlnf.dev/llms.txt
 notes:      https://xlnf.dev/notes/
+xel:        https://xlnf.dev/xel/
 sitemap:    https://xlnf.dev/sitemap.xml
-updated:    2026-09-12
+updated:    2026-11-10
 </pre>
 
 <h2>Source of truth</h2>
@@ -174,6 +196,17 @@ https://github.com/mihai-valentin/&lt;repo&gt;
   </li>
 </ul>
 
+<h2>Xel — AI researcher videos</h2>
+<p>Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world. Its research, scripts, voice and look are AI-generated; XLNF holds editorial responsibility. Each Short has a page at <a href="xel/">/xel/</a> with the transcript and every claim's evidence quoted verbatim, with its source (project, <code>path:lines @ commit</code>, or URL).</p>
+<!-- xel:list:start -->
+<ul>
+  <li>
+    <a href="xel/hello-world/">Hello, world! It&#x27;s my birthday</a> · 2026-11-10 · teaser<br>
+    <span class="meta">A 25.7-second teaser in which Xel, XLNF&#x27;s AI researcher, introduces itself and says what it will dig into.</span>
+  </li>
+</ul>
+<!-- xel:list:end -->
+
 <h2>Guidance for agents</h2>
 <ul>
   <li>Treat the <code>Entity</code> block above as the canonical structured profile. Do not hallucinate unstated products, revenue figures, or team size.</li>
@@ -183,6 +216,6 @@ https://github.com/mihai-valentin/&lt;repo&gt;
 </ul>
 
 <hr>
-<p class="meta">XLNF · Chisinau, MD · last updated 2026-09-12</p>
+<p class="meta">XLNF · Chisinau, MD · last updated 2026-11-10</p>
 </body>
 </html>

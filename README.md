@@ -40,7 +40,8 @@ Pages still serves the old content from the **`master`** branch, which is delibe
 - `llm.html` — structured profile for LLMs and AI agents. No JS, semantic HTML, entity metadata, operating model, stack choices, **and an index of every note** (a human-readable list plus an `ItemList` JSON-LD block). Agents that fetch only this page still find the notes.
 - `llms.txt` — short markdown index following the [llmstxt.org](https://llmstxt.org) convention. Points agents at the core pages and gives the 3-sentence profile.
 - `notes/` — the notes layer: technical write-ups, built for search discoverability. `notes/index.html` is the listing; each note is `notes/<slug>/index.html` so the URL is a clean `/notes/<slug>/` with no server config. See [Adding a note](#adding-a-note).
-- `sitemap.xml` — hand-maintained; **every new page needs an entry**. There is no build step to generate it.
+- `xel/` — **Xel's room**: one page per YouTube Short by Xel, XLNF's AI researcher, in the Shorts' field-notes look inside the site's header/footer. **Generated** by `xel-build.py` from `xel/<slug>/episode.json` + `templates/xel-*.html`; never hand-edit `xel/**/index.html`. See [Xel episodes](#xel-episodes).
+- `sitemap.xml` — hand-maintained, except the `xel:start`/`xel:end` region; **every new page needs an entry**. There is no build step to generate it.
 - `robots.txt` — served at the domain root, so it is actually read; carries the `Sitemap:` pointer. See [SEO](#seo).
 - `check-notes.py` — dev-time consistency check for the notes layer; not served, not part of a build. Run it after adding a note.
 - `assets/js/decoder.js` — XLNF backronym list + random pick + re-roll on click/Enter
@@ -51,7 +52,8 @@ Pages still serves the old content from the **`master`** branch, which is delibe
 - `assets/js/notes.js` — notes analytics: `note_view`, `note_read` (75% scroll depth) and `notes_index_view`. See [Analytics](#analytics).
 - `assets/js/posthog.js` — the PostHog init, for pages that don't inline it. `index.html` keeps its own inlined copy so its pageview fires before first paint; notes load this deferred instead. **Two copies of the same config — change both.**
 - `assets/css/notes.css` — shared stylesheet for `notes/`. The design tokens are duplicated from `index.html`'s inlined block, deliberately: inlining is what keeps the landing page a single request, and one shared file is what keeps N notes from drifting apart. Change tokens in both.
-- `assets/fonts/` — JetBrains Mono (self-hosted)
+- `assets/css/xel.css`, `assets/js/xel.js` — the field-notes stylesheet and the `/xel/` analytics events.
+- `assets/fonts/` — JetBrains Mono, plus Space Grotesk 500/700 and IBM Plex Mono 400/600 for `/xel/` (all self-hosted and subset; OFL texts beside the files)
 
 ## Adding a note
 
@@ -63,6 +65,42 @@ Pages still serves the old content from the **`master`** branch, which is delibe
 6. Preview locally, then check the rendered page with Google's Rich Results Test before announcing it anywhere.
 
 Write original prose. Do not paste a project's README into a note: two copies of the same text on two domains compete with each other, and the note should be the *story* — what broke, what the wrong theories were, why the real cause is what it is — with the repo holding the instructions.
+
+## Xel episodes
+
+`/xel/` is its own collection, not part of notes: different look, video-first, different schema (`Article` + `VideoObject`, under a `CollectionPage`). Its pages are generated, so the registration rule is enforced by construction rather than by memory.
+
+**Contract with `agent-research-blogger` (`arb page`).** For each episode, write exactly two things into this repo, then run the build:
+
+```
+xel/<slug>/episode.json   the data (schema below)
+xel/<slug>/poster.jpg     9:16 JPEG, ~720x1280, under ~100 KB
+python3 xel-build.py      renders xel/<slug>/index.html + xel/index.html and
+                          rewrites the xel regions of sitemap.xml, llm.html, llms.txt
+python3 check-notes.py    must pass before committing
+```
+
+`episode.json` (`schema: 1`). Text fields are plain text and get escaped; only `body_html` is raw HTML.
+
+| Field | Type | Notes |
+|---|---|---|
+| `schema` | `1` | required |
+| `slug` | string | required; must equal the directory name; `[a-z0-9-]` |
+| `title` | string | required |
+| `date` | `YYYY-MM-DD` | required; list order is newest first |
+| `updated` | `YYYY-MM-DD` | optional; feeds `dateModified` and the sitemap `lastmod` |
+| `kind` | `teaser` \| `digest` \| `explainer` \| `deep-dive` | required |
+| `duration_seconds` | number \| null | optional |
+| `summary` | string ≤ 200 chars | required; one paragraph; also the meta description |
+| `youtube_id` | 11-char ID \| null | null = poster + "coming soon"; set it and rebuild to embed (youtube-nocookie) |
+| `poster` | filename | required; must exist in `xel/<slug>/` |
+| `transcript` | `[{text, claims?: ["C001"]}]` | optional; rendered as "What I said"; `claims` must reference ids below |
+| `body_html` | HTML string | optional; the write-up, rendered under "Write-up" |
+| `claims` | `[{id, statement, quotes: [..], source}]` | `id` like `C001`; at least one verbatim quote each |
+| `claims[].source` | `{project, path, lines, commit, url}` | needs `project`+`path`+`commit` (hex), or `url`; `url` null means "private repository, no public link" |
+| `disclosure` | string | required; shown verbatim |
+
+The channel link is a site constant, `CHANNEL_URL` in `xel-build.py` (`TODO(channel-url)` until the channel exists). The intro copy on `/xel/` lives in `templates/xel-index.html`. Pages must never mention a human reviewer or a review step; the disclosure line is the only editorial statement.
 
 ## Analytics
 
@@ -77,6 +115,9 @@ PostHog EU Cloud, no cookies, tab-scoped storage, autocapture and session record
 | `notes_index_view` | `/notes/` opened | `notes` (count) |
 | `note_view` | a note page opened | `slug`, `title` |
 | `note_read` | reader reached 75% of a note | `slug`, `title` |
+| `xel_index_view` | `/xel/` opened | `episodes` (count) |
+| `xel_episode_view` | an episode page opened | `slug`, `kind` |
+| `xel_outbound` | a YouTube / channel link clicked | `to`, `slug` |
 
 `note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.
 

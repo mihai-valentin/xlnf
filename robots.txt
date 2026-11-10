@@ -3,5 +3,6 @@
 
 User-agent: *
 Allow: /
+Disallow: /templates/
 
 Sitemap: https://xlnf.dev/sitemap.xml
