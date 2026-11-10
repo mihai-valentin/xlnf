@@ -246,7 +246,8 @@ def render_episode(ep, template):
         if CHANNEL_URL else '<!-- TODO(channel-url) --><span class="btn pending" aria-disabled="true">Channel link soon</span>'
     )
     J = " " * 14
-    links = "\n".join(J + x for x in (watch, channel, '<a class="btn" href="../">← Xel\'s room</a>'))
+    # The watch button lives only under the Short; the end-of-page links don't repeat it.
+    links = "\n".join(J + x for x in (channel, '<a class="btn" href="../">← Xel\'s room</a>'))
     video += f'\n{I}<div class="actions">\n{I}  {watch}\n{I}</div>'
 
     S = " " * 12
