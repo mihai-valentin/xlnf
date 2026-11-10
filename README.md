@@ -94,11 +94,13 @@ python3 check-notes.py    must pass before committing
 | `summary` | string ≤ 200 chars | required; one paragraph; also the meta description |
 | `youtube_id` | 11-char ID \| null | null = poster + "coming soon"; set it and rebuild to embed (youtube-nocookie) |
 | `poster` | filename | required; must exist in `xel/<slug>/` |
-| `transcript` | `[{text, claims?: ["C001"]}]` | optional; rendered as "What I said"; `claims` must reference ids below |
+| `transcript` | `[{text, claims?: ["C001"]}]` | optional; rendered as "What I said". Per-line `claims` cites are optional, but every cite must resolve, and a non-teaser transcript must cite at least once |
 | `body_html` | HTML string | optional; the write-up, rendered under "Write-up" |
-| `claims` | `[{id, statement, quotes: [..], source}]` | `id` like `C001`; at least one verbatim quote each |
+| `claims` | `[{id, statement, quotes: [..], source}]` | `id` like `C001`; at least one verbatim quote each. **Required (≥ 1) for `digest`, `explainer`, `deep-dive`; optional for `teaser`** |
 | `claims[].source` | `{project, path, lines, commit, url}` | needs `project`+`path`+`commit` (hex), or `url`; `url` null means "private repository, no public link" |
 | `disclosure` | string | required; shown verbatim |
+
+**Teasers carry no facts:** a `kind: "teaser"` page renders no Sources section and no claim chips, even if `claims` or cites are present (they are still validated). Xel makes no publishing-cadence promise anywhere — no "weekly", not even a sitemap `changefreq`.
 
 The channel link is a site constant, `CHANNEL_URL` in `xel-build.py` (https://www.youtube.com/@xelxlnf). The intro copy on `/xel/` lives in `templates/xel-index.html`. Pages must never mention a human reviewer or a review step; the disclosure line is the only editorial statement.
 

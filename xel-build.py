@@ -35,6 +35,9 @@ BASE = "https://xlnf.dev"
 CHANNEL_URL = "https://www.youtube.com/@xelxlnf"
 
 KINDS = ("teaser", "digest", "explainer", "deep-dive")
+# Teasers carry no facts, so they render no Sources section and no claim chips.
+# Every other kind must cite at least one sourced claim.
+SOURCELESS_KINDS = ("teaser",)
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 YT_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 CLAIM_ID_RE = re.compile(r"^[A-Z]+[0-9]+$")
@@ -102,6 +105,9 @@ def load_episode(slug):
         raise EpisodeError(f"{rel}: 'body_html' must be a string (may be empty)")
 
     claims = ep.get("claims") or []
+    sourced = ep["kind"] not in SOURCELESS_KINDS
+    if sourced and not claims:
+        raise EpisodeError(f"{rel}: kind '{ep['kind']}' needs at least one claim in 'claims'")
     ids = set()
     for i, c in enumerate(claims):
         where = f"{rel}: claims[{i}]"
@@ -131,6 +137,9 @@ def load_episode(slug):
         for ref in line.get("claims") or []:
             if ref not in ids:
                 raise EpisodeError(f"{rel}: transcript[{i}] cites {ref}, which is not in claims")
+    transcript = ep.get("transcript") or []
+    if sourced and transcript and not any(line.get("claims") for line in transcript):
+        raise EpisodeError(f"{rel}: kind '{ep['kind']}' has a transcript but no line cites a claim")
     return ep
 
 
@@ -242,11 +251,12 @@ def render_episode(ep, template):
 
     S = " " * 12
     transcript_section = ""
+    sourced = ep["kind"] not in SOURCELESS_KINDS
     if ep.get("transcript"):
         items = []
         for line in ep["transcript"]:
             cites = "".join(
-                f'<a href="#{esc(c.lower())}">{esc(c)}</a>' for c in line.get("claims") or []
+                f'<a href="#{esc(c.lower())}">{esc(c)}</a>' for c in (line.get("claims") or [] if sourced else [])
             )
             cite_html = f' <span class="cite">{cites}</span>' if cites else ""
             items.append(f"{S}  <li>{esc(line['text'])}{cite_html}</li>")
@@ -264,7 +274,7 @@ def render_episode(ep, template):
         )
 
     claims_section = ""
-    if ep.get("claims"):
+    if sourced and ep.get("claims"):
         cards = []
         for c in ep["claims"]:
             quotes = "\n".join(f"{S}    <blockquote>{esc(q)}</blockquote>" for q in c["quotes"])
@@ -406,12 +416,13 @@ def render_sitemap(eps, text):
     newest = max((e.get("updated") or e["date"] for e in eps), default=None)
     entries = []
     if newest:
-        entries.append((f"{BASE}/xel/", newest, "weekly", "0.7"))
+        entries.append((f"{BASE}/xel/", newest, None, "0.7"))
     for ep in eps:
-        entries.append((url_for(ep), ep.get("updated") or ep["date"], "yearly", "0.6"))
+        entries.append((url_for(ep), ep.get("updated") or ep["date"], None, "0.6"))
     body = "\n" + "".join(
         f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{mod}</lastmod>\n"
-        f"    <changefreq>{freq}</changefreq>\n    <priority>{prio}</priority>\n  </url>\n"
+        # no <changefreq>: Xel promises no publishing cadence, not even to crawlers
+        f"    <priority>{prio}</priority>\n  </url>\n"
         for loc, mod, freq, prio in entries
     ) + "  "
     return replace_region(text, "<!-- xel:start -->", "<!-- xel:end -->", body, "sitemap.xml")
