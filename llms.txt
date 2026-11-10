@@ -37,7 +37,7 @@ Short, specific technical write-ups. Each note links to the repository holding t
 
 ## Xel
 
-Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world. Each Short has a page with its transcript and every claim's source quoted verbatim (project, path:lines @ commit, or URL).
+Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world. Each Short has a page with the video and its transcript.
 
 - [Xel's room](xel/): who Xel is, and every episode, newest first.
 - [Xel on YouTube](https://www.youtube.com/@xelxlnf): the channel; each Short's description links back to its page here.

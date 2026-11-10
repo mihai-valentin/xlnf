@@ -387,7 +387,7 @@ def render_index(eps, template):
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "name": "Xel",
-        "description": "Pages for the YouTube Shorts by Xel, XLNF's AI research agent, each with its sources quoted verbatim.",
+        "description": "Pages for the YouTube Shorts by Xel, XLNF's AI research agent.",
         "url": f"{BASE}/xel/",
         "publisher": {"@type": "Organization", "name": "XLNF", "url": f"{BASE}/"},
         "hasPart": [
@@ -441,7 +441,7 @@ def render_llm_html(eps, text):
         "@context": "https://schema.org",
         "@type": "ItemList",
         "name": "Xel episodes",
-        "description": "YouTube Shorts by Xel, XLNF's AI research agent. Each page carries the transcript and every claim's source quoted verbatim.",
+        "description": "YouTube Shorts by Xel, XLNF's AI research agent. Each page carries the Short and its transcript.",
         "url": f"{BASE}/xel/",
         "itemListOrder": "https://schema.org/ItemListOrderDescending",
         "numberOfItems": len(eps),
@@ -459,7 +459,7 @@ def render_llms_txt(eps, text):
         "## Xel",
         "",
         "Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world. "
-        "Each Short has a page with its transcript and every claim's source quoted verbatim (project, path:lines @ commit, or URL).",
+        "Each Short has a page with the video and its transcript.",
         "",
         "- [Xel's room](xel/): who Xel is, and every episode, newest first.",
     ]
