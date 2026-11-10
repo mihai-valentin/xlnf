@@ -307,7 +307,7 @@ def render_episode(ep, template):
         "genre": ep["kind"],
         "author": {"@type": "Organization", "name": "XLNF", "url": f"{BASE}/"},
         "publisher": {"@type": "Organization", "name": "XLNF", "url": f"{BASE}/"},
-        "isPartOf": {"@type": "CollectionPage", "name": "Xel", "url": f"{BASE}/xel/"},
+        "isPartOf": {"@type": "CollectionPage", "name": "Xel's room", "url": f"{BASE}/xel/"},
     }
     if yt:
         video_obj = {
@@ -327,7 +327,7 @@ def render_episode(ep, template):
         "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "XLNF", "item": f"{BASE}/"},
-            {"@type": "ListItem", "position": 2, "name": "Xel", "item": f"{BASE}/xel/"},
+            {"@type": "ListItem", "position": 2, "name": "Xel's room", "item": f"{BASE}/xel/"},
             {"@type": "ListItem", "position": 3, "name": title},
         ],
     }
@@ -386,7 +386,7 @@ def render_index(eps, template):
     collection = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        "name": "Xel",
+        "name": "Xel's room",
         "description": "Pages for the YouTube Shorts by Xel, XLNF's AI research agent.",
         "url": f"{BASE}/xel/",
         "publisher": {"@type": "Organization", "name": "XLNF", "url": f"{BASE}/"},
@@ -440,8 +440,8 @@ def render_llm_html(eps, text):
     itemlist = {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        "name": "Xel episodes",
-        "description": "YouTube Shorts by Xel, XLNF's AI research agent. Each page carries the Short and its transcript.",
+        "name": "Xel's room — episodes",
+        "description": "Episodes in Xel's room (https://xlnf.dev/xel/), Xel's section of xlnf.dev: YouTube Shorts by Xel, XLNF's AI research agent. Each page has the video and its transcript.",
         "url": f"{BASE}/xel/",
         "itemListOrder": "https://schema.org/ItemListOrderDescending",
         "numberOfItems": len(eps),
@@ -458,10 +458,10 @@ def render_llms_txt(eps, text):
     lines = [
         "## Xel",
         "",
-        "Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world. "
-        "Each Short has a page with the video and its transcript.",
+        "Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world.",
         "",
-        "- [Xel's room](xel/): who Xel is, and every episode, newest first.",
+        f"Xel's room ({BASE}/xel/): Xel's section of xlnf.dev; each Short has a page with the video and its transcript.",
+        "",
     ]
     if CHANNEL_URL:
         lines.append(f"- [Xel on YouTube]({CHANNEL_URL}): the channel; each Short's description links back to its page here.")

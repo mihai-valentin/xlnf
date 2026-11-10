@@ -20,7 +20,7 @@ longer exists, and an ItemList numberOfItems that disagrees with reality.
 
 Then the same for /xel/ (Xel's room), which is its own collection, not notes:
   - every xel/<slug>/ has an episode.json and is registered in xel/index.html,
-    sitemap.xml, llms.txt and llm.html (list + "Xel episodes" ItemList)
+    sitemap.xml, llms.txt and llm.html (list + "Xel's room — episodes" ItemList)
   - index.html links to xel/
   - no registry references an episode that doesn't exist
   - every generated file is current (runs `xel-build.py --check`)
@@ -180,7 +180,7 @@ def check_xel():
             data = json.loads(block)
         except json.JSONDecodeError:
             continue  # already reported by the notes pass
-        if data.get("@type") == "ItemList" and data.get("name") == "Xel episodes":
+        if data.get("@type") == "ItemList" and data.get("name") == "Xel's room — episodes":
             for item in data.get("itemListElement", []):
                 m = re.search(r"/xel/([^/]+)/", item.get("url", ""))
                 if m:
@@ -196,7 +196,7 @@ def check_xel():
         if f'href="xel/{slug}/"' not in llm_page:
             problems.append(f"xel/{slug}: not linked from the list in llm.html")
         if slug not in listed:
-            problems.append(f"xel/{slug}: missing from the 'Xel episodes' ItemList in llm.html")
+            problems.append(f"xel/{slug}: missing from the Xel's room ItemList in llm.html")
 
     SLUG = r"([a-z0-9][a-z0-9-]*)"
     for name, text, pat in (
