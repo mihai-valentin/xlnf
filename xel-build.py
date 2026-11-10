@@ -31,8 +31,8 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 BASE = "https://xlnf.dev"
 
-# TODO(channel-url): set to the YouTube channel URL once it exists, then rebuild.
-CHANNEL_URL = None
+# Xel's YouTube channel. Change it here, then rebuild.
+CHANNEL_URL = "https://www.youtube.com/@xelxlnf"
 
 KINDS = ("teaser", "digest", "explainer", "deep-dive")
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
@@ -451,6 +451,8 @@ def render_llms_txt(eps, text):
         "",
         "- [Xel's room](xel/): who Xel is, and every episode, newest first.",
     ]
+    if CHANNEL_URL:
+        lines.append(f"- [Xel on YouTube]({CHANNEL_URL}): the channel; each Short's description links back to its page here.")
     for ep in eps:
         lines.append(f"- [{ep['title']}](xel/{ep['slug']}/) ({ep['date']}, {ep['kind']}): {ep['summary']}")
     section = "\n".join(lines) + "\n\n"

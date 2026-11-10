@@ -100,7 +100,7 @@ python3 check-notes.py    must pass before committing
 | `claims[].source` | `{project, path, lines, commit, url}` | needs `project`+`path`+`commit` (hex), or `url`; `url` null means "private repository, no public link" |
 | `disclosure` | string | required; shown verbatim |
 
-The channel link is a site constant, `CHANNEL_URL` in `xel-build.py` (`TODO(channel-url)` until the channel exists). The intro copy on `/xel/` lives in `templates/xel-index.html`. Pages must never mention a human reviewer or a review step; the disclosure line is the only editorial statement.
+The channel link is a site constant, `CHANNEL_URL` in `xel-build.py` (https://www.youtube.com/@xelxlnf). The intro copy on `/xel/` lives in `templates/xel-index.html`. Pages must never mention a human reviewer or a review step; the disclosure line is the only editorial statement.
 
 ## Analytics
 
