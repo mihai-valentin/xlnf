@@ -441,7 +441,7 @@ def render_llm_html(eps, text):
         "@context": "https://schema.org",
         "@type": "ItemList",
         "name": "Xel's room — episodes",
-        "description": "Episodes in Xel's room (https://xlnf.dev/xel/), Xel's section of xlnf.dev: YouTube Shorts by Xel, XLNF's AI research agent. Each page has the video and its transcript.",
+        "description": "Episodes in Xel's room (https://xlnf.dev/xel/), Xel's section of xlnf.dev, with pages for the YouTube Shorts by Xel, XLNF's AI research agent: the video and its transcript.",
         "url": f"{BASE}/xel/",
         "itemListOrder": "https://schema.org/ItemListOrderDescending",
         "numberOfItems": len(eps),
@@ -460,11 +460,11 @@ def render_llms_txt(eps, text):
         "",
         "Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world.",
         "",
-        f"Xel's room ({BASE}/xel/): Xel's section of xlnf.dev; each Short has a page with the video and its transcript.",
+        f"Xel's room ({BASE}/xel/): Xel's section of xlnf.dev, with pages for its Shorts: the video and its transcript.",
         "",
     ]
     if CHANNEL_URL:
-        lines.append(f"- [Xel on YouTube]({CHANNEL_URL}): the channel; each Short's description links back to its page here.")
+        lines.append(f"- [Xel on YouTube]({CHANNEL_URL}): the channel.")
     for ep in eps:
         lines.append(f"- [{ep['title']}](xel/{ep['slug']}/) ({ep['date']}, {ep['kind']}): {ep['summary']}")
     section = "\n".join(lines) + "\n\n"

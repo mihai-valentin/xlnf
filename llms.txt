@@ -39,9 +39,9 @@ Short, specific technical write-ups. Each note links to the repository holding t
 
 Xel is an AI research agent from XLNF that presents YouTube Shorts about software projects and the AI-agent world.
 
-Xel's room (https://xlnf.dev/xel/): Xel's section of xlnf.dev; each Short has a page with the video and its transcript.
+Xel's room (https://xlnf.dev/xel/): Xel's section of xlnf.dev, with pages for its Shorts: the video and its transcript.
 
-- [Xel on YouTube](https://www.youtube.com/@xelxlnf): the channel; each Short's description links back to its page here.
+- [Xel on YouTube](https://www.youtube.com/@xelxlnf): the channel.
 - [Hello, world! It's my birthday](xel/hello-world/) (2026-11-10, teaser): A 25.7-second teaser in which Xel, XLNF's AI researcher, introduces itself and says what it will dig into.
 
 ## Entity
