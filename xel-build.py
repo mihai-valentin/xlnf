@@ -44,6 +44,7 @@ CLAIM_ID_RE = re.compile(r"^[A-Z]+[0-9]+$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SLOT_RE = re.compile(r"\{\{([a-z_]+)\}\}")
 ACTION_KIND_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+REFERENCE_KINDS = ("issue", "docs", "tool")
 # Short labels for an episode's actions on the /xel/ catalogue entry (the episode
 # page shows the full `label` from episode.json). Unknown kinds fall back to `label`.
 CATALOGUE_LABELS = {"fix": "Get the fix", "guide": "Read the explanation"}
@@ -133,6 +134,30 @@ def load_episode(slug):
         v = ep.get(key)
         if v is not None and not (isinstance(v, list) and v and all(isinstance(x, str) and x.strip() for x in v)):
             raise EpisodeError(f"{rel}: '{key}' must be a non-empty list of strings or absent")
+
+    refs = ep.get("references")
+    if refs is not None:
+        if not isinstance(refs, list) or not refs:
+            raise EpisodeError(f"{rel}: 'references' must be a non-empty list or absent")
+        seen = set()
+        for i, r in enumerate(refs):
+            where = f"{rel}: references[{i}]"
+            if not isinstance(r, dict):
+                raise EpisodeError(f"{where}: must be an object")
+            if not (isinstance(r.get("label"), str) and r["label"].strip()):
+                raise EpisodeError(f"{where}: 'label' is required")
+            if not re.match(r"^https://", str(r.get("url", ""))):
+                raise EpisodeError(f"{where}: 'url' must be https")
+            if r["url"] in seen:
+                raise EpisodeError(f"{where}: duplicate url {r['url']}")
+            seen.add(r["url"])
+            if r.get("kind") not in REFERENCE_KINDS:
+                raise EpisodeError(f"{where}: 'kind' must be one of {', '.join(REFERENCE_KINDS)}")
+            if r.get("note") is not None and not (isinstance(r["note"], str) and r["note"].strip()):
+                raise EpisodeError(f"{where}: 'note' must be a non-empty string or absent")
+    rf = ep.get("references_from")
+    if rf is not None and not (refs and re.match(r"^https://", str(rf))):
+        raise EpisodeError(f"{rel}: 'references_from' must be an https url, and needs 'references'")
 
     claims = ep.get("claims") or []
     sourced = ep["kind"] not in SOURCELESS_KINDS
@@ -407,6 +432,20 @@ def render_episode(ep, template):
             parts.append(f'{S}<section aria-labelledby="{key}">\n{S}<h2 id="{key}">{heading}</h2>\n'
                          f'{S}<ul class="facts">\n{items}\n{S}</ul>\n{S}</section>')
         fit_section = "\n".join(parts) + "\n"
+
+    # Further reading, not evidence: it never goes in Sources and makes no claim.
+    if ep.get("references"):
+        items = []
+        for r in ep["references"]:
+            note = f' — {esc(r["note"])}' if r.get("note") else ""
+            items.append(f'{S}  <li><a href="{esc(r["url"])}" data-track="{esc(r["kind"])}" rel="noopener">{esc(r["label"])}</a>{note}</li>')
+        origin = ""
+        if ep.get("references_from"):
+            m = re.match(r"^https://github\.com/[^/]+/([^/#]+)", ep["references_from"])
+            name = f"the {esc(m.group(1))} README" if m else "the source list"
+            origin = f'{S}<p class="meta">Listed in <a href="{esc(ep["references_from"])}" data-track="github" rel="noopener">{name}</a>.</p>\n'
+        fit_section += (f'{S}<section aria-labelledby="references">\n{S}<h2 id="references">Related reports and docs</h2>\n'
+                        f'{origin}{S}<ul class="refs">\n' + "\n".join(items) + f"\n{S}</ul>\n{S}</section>\n")
 
     dur = ep.get("duration_seconds")
     slots = {

@@ -103,6 +103,8 @@ python3 check-notes.py    must pass before committing
 | `applies_to` | string | optional; one sentence, shown under the title (only in the problem-first layout) |
 | `requirements` | `[string]` | optional; rendered as "What you need" at the top of the main column |
 | `limitations` | `[string]` | optional; rendered as "Limitations" after it |
+| `references` | `[{label, url, kind, note?}]` | optional; further reading, **not evidence** — rendered as its own "Related reports and docs" section after "Limitations", never in Sources. `url` https and unique; `kind` `issue` \| `docs` \| `tool` (used only as the `xel_outbound` `to` value, not shown); `note` optional, shown after an em dash |
+| `references_from` | https url | optional, needs `references`; the list's origin, shown as "Listed in the `<repo>` README." (repo name taken from a github.com URL) |
 
 Episodes without `actions` render exactly as before (title, summary, Short, transcript…).
 
@@ -125,7 +127,7 @@ PostHog EU Cloud, no cookies, tab-scoped storage, autocapture and session record
 | `note_read` | reader reached 75% of a note | `slug`, `title` |
 | `xel_index_view` | `/xel/` opened | `episodes` (count) |
 | `xel_episode_view` | an episode page opened | `slug`, `kind` |
-| `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `youtube` \| `channel` \| `episode`), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
+| `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `youtube` \| `channel` \| `episode` \| `issue` \| `docs` \| `tool` — the last three are reference links), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
 
 `note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.
 

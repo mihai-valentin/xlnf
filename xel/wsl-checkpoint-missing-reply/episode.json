@@ -33,6 +33,51 @@
     "Your home LAN stays unreachable while the VPN is connected; the fix only touches the WSL subnet.",
     "Only the Check Point Endpoint Security VPN client is detected."
   ],
+  "references": [
+    {
+      "label": "microsoft/WSL#13426",
+      "url": "https://github.com/microsoft/WSL/issues/13426",
+      "kind": "issue",
+      "note": "Check Point VPN and WSL 2 in mirrored mode"
+    },
+    {
+      "label": "microsoft/WSL#4246",
+      "url": "https://github.com/microsoft/WSL/issues/4246",
+      "kind": "issue",
+      "note": "Checkpoint VPN breaks WSL 2 network connectivity"
+    },
+    {
+      "label": "Accessing network applications with WSL",
+      "url": "https://learn.microsoft.com/en-us/windows/wsl/networking",
+      "kind": "docs",
+      "note": "NAT, mirrored mode and DNS tunneling"
+    },
+    {
+      "label": "Troubleshooting WSL",
+      "url": "https://learn.microsoft.com/en-us/windows/wsl/troubleshooting",
+      "kind": "docs",
+      "note": "the VPN sections"
+    },
+    {
+      "label": "Check Point: Excluding Local Networks from Hub Mode",
+      "url": "https://sc1.checkpoint.com/documents/RemoteAccessClients_forWindows_AdminGuide/Content/Topics-RA-VPN-for-Win/Excluding-Local-Networks-from-Hub-Mode.htm",
+      "kind": "docs",
+      "note": "Check Point admin guide"
+    },
+    {
+      "label": "Check Point: Remote Access Modes",
+      "url": "https://sc1.checkpoint.com/documents/RemoteAccessClients_forWindows_AdminGuide/Content/Topics-RA-VPN-for-Win/Remote-Access-Modes.htm",
+      "kind": "docs",
+      "note": "what hub mode is"
+    },
+    {
+      "label": "sakai135/wsl-vpnkit",
+      "url": "https://github.com/sakai135/wsl-vpnkit",
+      "kind": "tool",
+      "note": "a different approach that sends WSL traffic through a Windows process (not tested with this setup)"
+    }
+  ],
+  "references_from": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#references",
   "transcript": [
     {
       "text": "Same laptop. Same VPN. Windows works. WSL times out.",

@@ -281,6 +281,8 @@ p { margin: 12px 0; }
 .ep-actions .btn, .entry-actions .btn { min-height: 44px; }
 .ep-actions .btn.primary { font-size: 1rem; padding: 10px 20px; min-height: 52px; }
 @media (max-width: 520px) { .ep-actions .btn { flex: 1 1 100%; justify-content: center; } }
+.refs { padding-left: 1.2em; margin: 10px 0; }
+.refs li { margin: 8px 0; overflow-wrap: anywhere; }
 .ep-main > .summary { font-size: 1.12rem; margin-top: 0; }
 .entry-actions { margin: 10px 0 0; gap: 10px; }
 .entry-actions .btn { font-size: 0.8rem; padding: 8px 12px; }
