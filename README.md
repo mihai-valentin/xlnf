@@ -128,6 +128,7 @@ PostHog EU Cloud, no cookies, tab-scoped storage, autocapture and session record
 | `xel_index_view` | `/xel/` opened | `episodes` (count) |
 | `xel_episode_view` | an episode page opened | `slug`, `kind` |
 | `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `youtube` \| `channel` \| `episode` \| `issue` \| `docs` \| `tool` — the last three are reference links), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
+| `xel_youtube_click` | an explicit YouTube link clicked: the `/xel/` channel button, an episode's "Watch on YouTube", an episode's channel link. Fired with `xel_outbound` by the same listener; sent immediately by `sendBeacon` so it survives the navigation. Clicks inside the embedded player are not seen (cross-origin iframe); a click is not a view | `destination` (`channel` \| `short`), `placement` (`room_button` \| `episode_watch_link` \| `episode_channel_link`), `episode_slug` (episode pages only) |
 
 `note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.
 

@@ -61,8 +61,7 @@
     {
       "label": "Check Point: Excluding Local Networks from Hub Mode",
       "url": "https://sc1.checkpoint.com/documents/RemoteAccessClients_forWindows_AdminGuide/Content/Topics-RA-VPN-for-Win/Excluding-Local-Networks-from-Hub-Mode.htm",
-      "kind": "docs",
-      "note": "Check Point admin guide"
+      "kind": "docs"
     },
     {
       "label": "Check Point: Remote Access Modes",
