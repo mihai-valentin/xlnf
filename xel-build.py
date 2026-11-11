@@ -17,6 +17,10 @@ Output (all generated; never hand-edit):
 
 index.html links to /xel/ with a static, hand-written link; it is not touched.
 
+Every path in the generated pages is root-relative (/xel/..., /assets/...): the
+host serves /xel and /xel/<slug> without a trailing slash (200, no redirect), and a
+relative path would then resolve against the wrong directory.
+
 Usage:
     python3 xel-build.py           # write everything
     python3 xel-build.py --check   # write nothing; exit 1 if anything is stale
@@ -307,7 +311,7 @@ def render_episode(ep, template):
     else:
         video = (
             f'{I}<div class="frame916" data-video="pending">\n'
-            f'{I}  <img src="{esc(ep["poster"])}" width="720" height="1280" alt="Poster for the Short: {esc(title)}">\n'
+            f'{I}  <img src="/xel/{slug}/{esc(ep["poster"])}" width="720" height="1280" alt="Poster for the Short: {esc(title)}">\n'
             f'{I}  <span class="soon">Short coming soon</span>\n'
             f'{I}</div>'
         )
@@ -322,7 +326,7 @@ def render_episode(ep, template):
     )
     J = " " * 14
     # The watch button lives only under the Short; the end-of-page links don't repeat it.
-    links = "\n".join(J + x for x in (channel, '<a class="btn" href="../">← Xel\'s room</a>'))
+    links = "\n".join(J + x for x in (channel, '<a class="btn" href="/xel/">← Xel\'s room</a>'))
     video += f'\n{I}<div class="actions">\n{I}  {watch}\n{I}</div>'
 
     S = " " * 12
@@ -484,16 +488,16 @@ def render_index(eps, template):
             if ep.get("actions"):
                 links = [action_link(a, CATALOGUE_LABELS.get(a["kind"], a["label"])) for a in
                          sorted(ep["actions"], key=lambda a: not a.get("primary"))]
-                links.append(f'<a class="btn" href="{ep["slug"]}/" data-track="episode">Watch the episode</a>')
+                links.append(f'<a class="btn" href="/xel/{ep["slug"]}/" data-track="episode">Watch the episode</a>')
                 # links straight after the title: on a phone they must show on first load
                 extra = (f'{I}      <p class="actions entry-actions">\n'
                          + "\n".join(f"{I}        {x}" for x in links) + f"\n{I}      </p>\n")
             cards.append(
                 f'{I}  <li class="episode-card" data-slug="{ep["slug"]}">\n'
-                f'{I}    <a href="{ep["slug"]}/" tabindex="-1" aria-hidden="true"><img class="thumb" src="{ep["slug"]}/{esc(ep["poster"])}" width="120" height="213" alt="" loading="lazy"></a>\n'
+                f'{I}    <a href="/xel/{ep["slug"]}/" tabindex="-1" aria-hidden="true"><img class="thumb" src="/xel/{ep["slug"]}/{esc(ep["poster"])}" width="120" height="213" alt="" loading="lazy"></a>\n'
                 f"{I}    <div>\n"
                 f'{I}      <p class="kicker"><span class="kind">{ep["kind"]}</span> <span class="meta"><time datetime="{ep["date"]}">{ep["date"]}</time>{" · " + fmt_duration(dur) if dur else ""}</span></p>\n'
-                f'{I}      <h3><a href="{ep["slug"]}/">{esc(ep["title"])}</a></h3>\n'
+                f'{I}      <h3><a href="/xel/{ep["slug"]}/">{esc(ep["title"])}</a></h3>\n'
                 f'{extra}{I}      <p>{esc(ep["summary"])}</p>\n'
                 f"{I}    </div>\n"
                 f"{I}  </li>"

@@ -187,7 +187,7 @@ def check_xel():
                     listed.add(m.group(1))
 
     for slug in slugs:
-        if f'href="{slug}/"' not in xel_index:
+        if f'href="/xel/{slug}/"' not in xel_index:  # root-relative, see xel-build.py
             problems.append(f"xel/{slug}: not listed in xel/index.html")
         if f"{BASE}/xel/{slug}/" not in sitemap:
             problems.append(f"xel/{slug}: missing from sitemap.xml")
