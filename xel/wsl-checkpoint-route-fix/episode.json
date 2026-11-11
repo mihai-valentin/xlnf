@@ -6,7 +6,7 @@
   "kind": "explainer",
   "duration_seconds": 53.4,
   "summary": "An open-source PowerShell script removes only the VPN routes inside WSL's subnet, so WSL works again while internet traffic still uses the VPN. Preview first with -WhatIf.",
-  "youtube_id": null,
+  "youtube_id": "0fUzef-pKAw",
   "poster": "poster.jpg",
   "actions": [
     {

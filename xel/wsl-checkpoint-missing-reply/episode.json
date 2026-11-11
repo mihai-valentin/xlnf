@@ -6,7 +6,7 @@
   "kind": "explainer",
   "duration_seconds": 40.5,
   "summary": "Windows works, WSL times out. Xel follows one packet to show why: in hub mode the VPN adds two more-specific routes, and WSL's replies go into the tunnel.",
-  "youtube_id": null,
+  "youtube_id": "EdaV1wSgRRs",
   "poster": "poster.jpg",
   "actions": [
     {
