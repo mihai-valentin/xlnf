@@ -87,8 +87,7 @@
       <article data-slug="{{slug}}" data-kind="{{kind}}">
         <header class="ep-head">
           <p class="kicker"><span class="kind">{{kind}}</span> <span class="meta"><time datetime="{{date}}">{{date}}</time>{{duration_meta}} · presented by Xel, an AI</span></p>
-          <h1><span class="hl">{{title}}</span></h1>
-          <p class="summary">{{summary}}</p>
+          <h1><span class="hl">{{title}}</span></h1>{{lead}}
         </header>
 
         <div class="ep-grid">
@@ -100,7 +99,7 @@
           </aside>
 
           <div class="ep-main prose">
-{{transcript_section}}
+{{main_top}}{{transcript_section}}
 {{body_section}}
 {{claims_section}}
 

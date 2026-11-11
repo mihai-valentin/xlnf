@@ -51,8 +51,18 @@
   <!-- xel:start -->
   <url>
     <loc>https://xlnf.dev/xel/</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xlnf.dev/xel/wsl-checkpoint-missing-reply/</loc>
+    <lastmod>2026-11-11</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://xlnf.dev/xel/wsl-checkpoint-route-fix/</loc>
+    <lastmod>2026-11-11</lastmod>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://xlnf.dev/xel/hello-world/</loc>

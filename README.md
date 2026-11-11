@@ -99,6 +99,12 @@ python3 check-notes.py    must pass before committing
 | `claims` | `[{id, statement, quotes: [..], source}]` | `id` like `C001`; at least one verbatim quote each. **Required (≥ 1) for `digest`, `explainer`, `deep-dive`; optional for `teaser`** |
 | `claims[].source` | `{project, path, lines, commit, url}` | needs `project`+`path`+`commit` (hex), or `url`; `url` null means "private repository, no public link" |
 | `disclosure` | string | required; shown verbatim |
+| `actions` | `[{kind, label, url, primary?}]` | optional; non-empty if present. `kind` `[a-z0-9-]` (`fix`, `guide`, …); `url` https; at most one `primary`. Present = **problem-first layout**: under the title come `applies_to` and these buttons (primary first, dominant, ≥ 44 px tap target), and the summary moves below the Short. On `/xel/` the entry gets direct links too: short labels for `fix` ("Get the fix") and `guide` ("Read the explanation"), `label` otherwise, plus "Watch the episode". Analytics `to` is `github` for github.com URLs, else the action's `kind`. `https://xlnf.dev/...` URLs are rendered root-relative |
+| `applies_to` | string | optional; one sentence, shown under the title (only in the problem-first layout) |
+| `requirements` | `[string]` | optional; rendered as "What you need" at the top of the main column |
+| `limitations` | `[string]` | optional; rendered as "Limitations" after it |
+
+Episodes without `actions` render exactly as before (title, summary, Short, transcript…).
 
 **Teasers carry no facts:** a `kind: "teaser"` page renders no Sources section and no claim chips, even if `claims` or cites are present (they are still validated). Xel makes no publishing-cadence promise anywhere — no "weekly", not even a sitemap `changefreq`.
 
@@ -119,7 +125,7 @@ PostHog EU Cloud, no cookies, tab-scoped storage, autocapture and session record
 | `note_read` | reader reached 75% of a note | `slug`, `title` |
 | `xel_index_view` | `/xel/` opened | `episodes` (count) |
 | `xel_episode_view` | an episode page opened | `slug`, `kind` |
-| `xel_outbound` | a YouTube / channel link clicked | `to`, `slug` |
+| `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `youtube` \| `channel` \| `episode`), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
 
 `note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.
 

@@ -43,6 +43,10 @@ YT_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 CLAIM_ID_RE = re.compile(r"^[A-Z]+[0-9]+$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SLOT_RE = re.compile(r"\{\{([a-z_]+)\}\}")
+ACTION_KIND_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+# Short labels for an episode's actions on the /xel/ catalogue entry (the episode
+# page shows the full `label` from episode.json). Unknown kinds fall back to `label`.
+CATALOGUE_LABELS = {"fix": "Get the fix", "guide": "Read the explanation"}
 
 
 class EpisodeError(Exception):
@@ -103,6 +107,32 @@ def load_episode(slug):
     need("disclosure")
     if not isinstance(ep.get("body_html", ""), str):
         raise EpisodeError(f"{rel}: 'body_html' must be a string (may be empty)")
+
+    actions = ep.get("actions")
+    if actions is not None:
+        if not isinstance(actions, list) or not actions:
+            raise EpisodeError(f"{rel}: 'actions' must be a non-empty list or absent")
+        for i, a in enumerate(actions):
+            where = f"{rel}: actions[{i}]"
+            if not isinstance(a, dict):
+                raise EpisodeError(f"{where}: must be an object")
+            if not ACTION_KIND_RE.match(str(a.get("kind", ""))):
+                raise EpisodeError(f"{where}: 'kind' is required ([a-z0-9-], e.g. fix, guide)")
+            if not (isinstance(a.get("label"), str) and a["label"].strip()):
+                raise EpisodeError(f"{where}: 'label' is required")
+            if not re.match(r"^https://", str(a.get("url", ""))):
+                raise EpisodeError(f"{where}: 'url' must be https")
+            if not isinstance(a.get("primary", False), bool):
+                raise EpisodeError(f"{where}: 'primary' must be true, false or absent")
+        if sum(1 for a in actions if a.get("primary")) > 1:
+            raise EpisodeError(f"{rel}: at most one action may be primary")
+    applies_to = ep.get("applies_to")
+    if applies_to is not None and not (isinstance(applies_to, str) and applies_to.strip()):
+        raise EpisodeError(f"{rel}: 'applies_to' must be a non-empty string or absent")
+    for key in ("requirements", "limitations"):
+        v = ep.get(key)
+        if v is not None and not (isinstance(v, list) and v and all(isinstance(x, str) and x.strip() for x in v)):
+            raise EpisodeError(f"{rel}: '{key}' must be a non-empty list of strings or absent")
 
     claims = ep.get("claims") or []
     sourced = ep["kind"] not in SOURCELESS_KINDS
@@ -187,6 +217,26 @@ def url_for(ep):
 
 def fmt_duration(sec):
     return f"{sec:g} s"
+
+
+def action_href(url):
+    """Same-site links stay relative-to-root so they also work in a local preview."""
+    return url[len(BASE):] if url.startswith(BASE + "/") else url
+
+
+def action_track(a):
+    """xel_outbound `to` value: where the link goes, not what it is called."""
+    host = re.sub(r"^https://([^/]+).*$", r"\1", a["url"]).lower()
+    if host in ("github.com", "www.github.com"):
+        return "github"
+    return a["kind"]
+
+
+def action_link(a, label, cls="btn", primary_cls="btn primary"):
+    href = action_href(a["url"])
+    rel = "" if href.startswith("/") else ' rel="noopener"'
+    return (f'<a class="{primary_cls if a.get("primary") else cls}" href="{esc(href)}"'
+            f' data-track="{esc(action_track(a))}"{rel}>{esc(label)}</a>')
 
 
 def short_commit(c):
@@ -332,6 +382,32 @@ def render_episode(ep, template):
         ],
     }
 
+    H = " " * 10  # indentation inside <header class="ep-head">
+    if ep.get("actions"):
+        # Problem-first layout: title, who it applies to, then the actions;
+        # the summary moves below the Short, at the top of the main column.
+        lead = ""
+        if ep.get("applies_to"):
+            lead += f'\n{H}<p class="applies"><span class="label">Applies to</span> {esc(ep["applies_to"])}</p>'
+        ordered = sorted(ep["actions"], key=lambda a: not a.get("primary"))
+        lead += (f'\n{H}<nav class="actions ep-actions" aria-label="what to do next">\n'
+                 + "\n".join(f"{H}  {action_link(a, a['label'])}" for a in ordered)
+                 + f"\n{H}</nav>")
+        main_summary = f'{S}<p class="summary">{esc(ep["summary"])}</p>\n'
+    else:
+        lead = f'\n{H}<p class="summary">{esc(ep["summary"])}</p>'
+        main_summary = ""
+
+    fit_section = ""
+    blocks = [(k, h) for k, h in (("requirements", "What you need"), ("limitations", "Limitations")) if ep.get(k)]
+    if blocks:
+        parts = []
+        for key, heading in blocks:
+            items = "\n".join(f"{S}  <li>{esc(x)}</li>" for x in ep[key])
+            parts.append(f'{S}<section aria-labelledby="{key}">\n{S}<h2 id="{key}">{heading}</h2>\n'
+                         f'{S}<ul class="facts">\n{items}\n{S}</ul>\n{S}</section>')
+        fit_section = "\n".join(parts) + "\n"
+
     dur = ep.get("duration_seconds")
     slots = {
         "title": esc(title),
@@ -341,7 +417,8 @@ def render_episode(ep, template):
         "date": ep["date"],
         "kind": ep["kind"],
         "slug": slug,
-        "summary": esc(ep["summary"]),
+        "lead": lead,
+        "main_top": main_summary + fit_section,
         "duration_meta": f" · {fmt_duration(dur)}" if dur else "",
         "jsonld_article": jsonld(article),
         "jsonld_breadcrumb": jsonld(breadcrumb),
@@ -364,13 +441,21 @@ def render_index(eps, template):
         cards = []
         for ep in eps:
             dur = ep.get("duration_seconds")
+            extra = ""
+            if ep.get("actions"):
+                links = [action_link(a, CATALOGUE_LABELS.get(a["kind"], a["label"])) for a in
+                         sorted(ep["actions"], key=lambda a: not a.get("primary"))]
+                links.append(f'<a class="btn" href="{ep["slug"]}/" data-track="episode">Watch the episode</a>')
+                # links straight after the title: on a phone they must show on first load
+                extra = (f'{I}      <p class="actions entry-actions">\n'
+                         + "\n".join(f"{I}        {x}" for x in links) + f"\n{I}      </p>\n")
             cards.append(
-                f'{I}  <li class="episode-card">\n'
+                f'{I}  <li class="episode-card" data-slug="{ep["slug"]}">\n'
                 f'{I}    <a href="{ep["slug"]}/" tabindex="-1" aria-hidden="true"><img class="thumb" src="{ep["slug"]}/{esc(ep["poster"])}" width="120" height="213" alt="" loading="lazy"></a>\n'
                 f"{I}    <div>\n"
                 f'{I}      <p class="kicker"><span class="kind">{ep["kind"]}</span> <span class="meta"><time datetime="{ep["date"]}">{ep["date"]}</time>{" · " + fmt_duration(dur) if dur else ""}</span></p>\n'
                 f'{I}      <h3><a href="{ep["slug"]}/">{esc(ep["title"])}</a></h3>\n'
-                f'{I}      <p>{esc(ep["summary"])}</p>\n'
+                f'{extra}{I}      <p>{esc(ep["summary"])}</p>\n'
                 f"{I}    </div>\n"
                 f"{I}  </li>"
             )

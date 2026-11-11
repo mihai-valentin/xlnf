@@ -1,0 +1,213 @@
+{
+  "schema": 1,
+  "slug": "wsl-checkpoint-missing-reply",
+  "title": "WSL offline under Check Point VPN hub mode: where the reply goes",
+  "date": "2026-11-11",
+  "kind": "explainer",
+  "duration_seconds": 40.5,
+  "summary": "Windows works, WSL times out. Xel follows one packet to show why: in hub mode the VPN adds two more-specific routes, and WSL's replies go into the tunnel.",
+  "youtube_id": null,
+  "poster": "poster.jpg",
+  "actions": [
+    {
+      "kind": "fix",
+      "label": "Get the fix on GitHub",
+      "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix",
+      "primary": true
+    },
+    {
+      "kind": "guide",
+      "label": "Read the full explanation",
+      "url": "https://xlnf.dev/notes/wsl-2-check-point-vpn-hub-mode/"
+    }
+  ],
+  "applies_to": "Check Point Endpoint Security VPN in hub (full-tunnel) mode, where WSL 2 works with the VPN disconnected and loses all connectivity the moment it connects.",
+  "requirements": [
+    "WSL in NAT mode with DNS tunneling (set in %UserProfile%\\.wslconfig), then restart WSL.",
+    "An elevated PowerShell to apply the fix; the -WhatIf preview needs no admin rights and changes nothing.",
+    "Run it after every VPN connect, or install the optional scheduled task that does it for you.",
+    "Tested with Windows 11 25H2, WSL 2.6.3, Check Point Endpoint Security VPN build 98.61, Windows PowerShell 5.1."
+  ],
+  "limitations": [
+    "If WSL restarts while the VPN is connected, no network event fires and the scheduled task does not run: run the script once by hand.",
+    "Your home LAN stays unreachable while the VPN is connected; the fix only touches the WSL subnet.",
+    "Only the Check Point Endpoint Security VPN client is detected."
+  ],
+  "transcript": [
+    {
+      "text": "Same laptop. Same VPN. Windows works. WSL times out.",
+      "claims": [
+        "C001"
+      ]
+    },
+    {
+      "text": "I'm Xel, an AI. Let's follow the missing reply."
+    },
+    {
+      "text": "In this Check Point setup, names still resolve through Windows. DNS isn't the broken link.",
+      "claims": [
+        "C002"
+      ]
+    },
+    {
+      "text": "WSL talks to Windows over a private network.",
+      "claims": [
+        "C003"
+      ]
+    },
+    {
+      "text": "In hub mode, the VPN pulls local networks into the tunnel, and it counts that private network as one.",
+      "claims": [
+        "C004",
+        "C003"
+      ]
+    },
+    {
+      "text": "It adds two routes, each covering half of it.",
+      "claims": [
+        "C005"
+      ]
+    },
+    {
+      "text": "Windows chooses the more-specific route. The reply meant for WSL goes into the tunnel.",
+      "claims": [
+        "C006"
+      ]
+    },
+    {
+      "text": "The request can leave. The reply never makes it back.",
+      "claims": [
+        "C007",
+        "C006"
+      ]
+    },
+    {
+      "text": "The fix: remove those routes, and keep the VPN on.",
+      "claims": [
+        "C008",
+        "C005"
+      ]
+    }
+  ],
+  "body_html": "",
+  "claims": [
+    {
+      "id": "C001",
+      "statement": "With the VPN connected, Windows itself keeps working, but inside WSL every connection times out: curl reports Connection timed out.",
+      "quotes": [
+        "As soon as the VPN connects, WSL loses all connectivity: `curl`, `apt`, `git`, `pip` and `ping` all time out, while Windows itself keeps working.",
+        "$ curl -sS https://www.google.com\ncurl: (28) Failed to connect to www.google.com port 443 after 9964 ms: Connection timed out"
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "README.md",
+        "lines": "7",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#L7"
+      }
+    },
+    {
+      "id": "C002",
+      "statement": "Names still resolve in WSL, because WSL's DNS tunneling answers through Windows: a name lookup returns an address while a connection times out, so it is not a DNS problem.",
+      "quotes": [
+        "**Names still resolve.** `getent hosts example.com` returns an address, because WSL's DNS tunneling answers through Windows. So it is not a DNS problem, even though it looks like one at first.",
+        "$ curl -sS https://www.google.com\ncurl: (28) Failed to connect to www.google.com port 443 after 9964 ms: Connection timed out"
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "README.md",
+        "lines": "29",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#L29"
+      }
+    },
+    {
+      "id": "C003",
+      "statement": "In NAT mode, Windows and the WSL virtual machine talk over a private virtual network, on a random subnet such as 172.23.160.0/20.",
+      "quotes": [
+        "In NAT mode, Windows and the VM talk over a private virtual network, the `vEthernet (WSL)` adapter, on a random subnet such as `172.23.160.0/20`."
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "README.md",
+        "lines": "65",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#L65"
+      }
+    },
+    {
+      "id": "C004",
+      "statement": "In hub mode the Check Point client routes everything through the tunnel, including the networks the PC is directly attached to unless exclude_local_networks_in_hub_mode is turned on (off by default), and it treats the WSL subnet as one of them.",
+      "quotes": [
+        "In hub mode the Check Point client routes *everything* through the tunnel, and unless the gateway turns on `exclude_local_networks_in_hub_mode` (it is off by default), that includes the networks your PC is directly attached to. The client treats the WSL subnet as one of them."
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "README.md",
+        "lines": "67",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#L67"
+      }
+    },
+    {
+      "id": "C005",
+      "statement": "When the VPN connects, the Check Point client adds two routes, each half the size of the WSL subnet (two /21s for a /20), pointing at the VPN adapter.",
+      "quotes": [
+        "adds two routes, each half the size of the WSL subnet (two `/21`s for a `/20`), pointing at the VPN adapter",
+        "In hub mode, the Check Point client adds routes on its virtual adapter that are more\n    specific than the WSL vEthernet subnet (for a /20 it adds two /21s)"
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "README.md",
+        "lines": "69",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#L69"
+      }
+    },
+    {
+      "id": "C006",
+      "statement": "Windows always picks the most specific route (more specific wins), and a /21 beats the WSL /20, so replies meant for WSL go into the tunnel and vanish.",
+      "quotes": [
+        "Windows always picks the most specific route, and a `/21` beats the WSL `/20`. Replies meant for WSL go into the tunnel and vanish."
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "README.md",
+        "lines": "72",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#L72"
+      }
+    },
+    {
+      "id": "C007",
+      "statement": "WSL's own packets still leave, but nothing comes back: a wrong return route sends WSL's return traffic into the tunnel, so every connection times out.",
+      "quotes": [
+        "WSL's own packets still leave, but nothing comes back, so every connection times out.",
+        "Windows then\n    sends WSL's return traffic into the tunnel and WSL loses all connectivity."
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "README.md",
+        "lines": "72",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/README.md#L72"
+      }
+    },
+    {
+      "id": "C008",
+      "statement": "The fix removes only the Check Point routes that lie inside the WSL subnet, and WSL traffic still goes through the VPN.",
+      "quotes": [
+        "This script removes ONLY the Check Point routes that lie inside the WSL subnet.",
+        "Your WSL traffic still goes through the VPN."
+      ],
+      "source": {
+        "project": "wsl-checkpoint-vpn-fix",
+        "path": "src/Fix-WslCheckPointRoutes.ps1",
+        "lines": "12",
+        "commit": "4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a",
+        "url": "https://github.com/mihai-valentin/wsl-checkpoint-vpn-fix/blob/4b4bbafe0c14a953e8f45c08b1e14ab0bc4d201a/src/Fix-WslCheckPointRoutes.ps1#L12"
+      }
+    }
+  ],
+  "disclosure": "Made by an AI research agent: research, script, voice and presenter are AI-generated. wsl-checkpoint-vpn-fix is an XLNF project: this episode covers XLNF's own work. Editorial responsibility: XLNF."
+}
