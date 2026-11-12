@@ -55,7 +55,17 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://xlnf.dev/xel/agent-reached-chatbot-through-dns/</loc>
+    <lastmod>2026-11-12</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://xlnf.dev/xel/agents-message-board-who-sent-that/</loc>
+    <lastmod>2026-11-12</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://xlnf.dev/xel/icml-hidden-instructions-peer-review/</loc>
     <lastmod>2026-11-12</lastmod>
     <priority>0.6</priority>
   </url>
