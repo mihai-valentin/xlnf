@@ -38,7 +38,7 @@ BASE = "https://xlnf.dev"
 # Xel's YouTube channel. Change it here, then rebuild.
 CHANNEL_URL = "https://www.youtube.com/@xelxlnf"
 
-KINDS = ("teaser", "digest", "explainer", "deep-dive")
+KINDS = ("teaser", "digest", "explainer", "deep-dive", "report")
 # Teasers carry no facts, so they render no Sources section and no claim chips.
 # Every other kind must cite at least one sourced claim.
 SOURCELESS_KINDS = ("teaser",)
@@ -48,7 +48,7 @@ CLAIM_ID_RE = re.compile(r"^[A-Z]+[0-9]+$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SLOT_RE = re.compile(r"\{\{([a-z_]+)\}\}")
 ACTION_KIND_RE = re.compile(r"^[a-z][a-z0-9-]*$")
-REFERENCE_KINDS = ("issue", "docs", "tool")
+REFERENCE_KINDS = ("issue", "docs", "tool", "report")
 # Short labels for an episode's actions on the /xel/ catalogue entry (the episode
 # page shows the full `label` from episode.json). Unknown kinds fall back to `label`.
 CATALOGUE_LABELS = {"fix": "Get the fix", "guide": "Read the explanation"}
@@ -187,8 +187,12 @@ def load_episode(slug):
             raise EpisodeError(f"{where}: 'source' needs project+path+commit, or a url")
         if src.get("commit") and not re.match(r"^[0-9a-f]{7,40}$", src["commit"]):
             raise EpisodeError(f"{where}: source.commit must be a hex commit hash")
-        if src.get("url") and not re.match(r"^https?://", src["url"]):
-            raise EpisodeError(f"{where}: source.url must be http(s)")
+        for k in ("url", "quote_link"):
+            if src.get(k) and not re.match(r"^https?://", src[k]):
+                raise EpisodeError(f"{where}: source.{k} must be http(s)")
+        for k in ("published", "accessed"):
+            if src.get(k) is not None and not DATE_RE.match(str(src[k])):
+                raise EpisodeError(f"{where}: source.{k} must be YYYY-MM-DD or absent")
 
     for i, line in enumerate(ep.get("transcript") or []):
         if not (line.get("text") or "").strip():
@@ -282,7 +286,18 @@ def source_html(src):
         if src.get("commit"):
             label += f' @ <code title="{esc(src["commit"])}">{esc(short_commit(src["commit"]))}</code>'
         parts.append(label)
-    if src.get("url"):
+    if src.get("url") and not src.get("project") and src.get("title"):
+        # a web page: publisher, title (linked), dates, and a link to the quote in place
+        if src.get("publisher"):
+            parts.append(f"<strong>{esc(src['publisher'])}</strong>")
+        parts.append(f'<a href="{esc(src["url"])}" rel="noopener">{esc(src["title"])}</a>')
+        if src.get("published"):
+            parts.append(f'published <time datetime="{esc(src["published"])}">{esc(src["published"])}</time>')
+        if src.get("accessed"):
+            parts.append(f'accessed <time datetime="{esc(src["accessed"])}">{esc(src["accessed"])}</time>')
+        if src.get("quote_link"):
+            parts.append(f'<a href="{esc(src["quote_link"])}" rel="noopener">quote in context</a>')
+    elif src.get("url"):
         shown = esc(src["url"]) if not src.get("project") else "source"
         parts.append(f'<a href="{esc(src["url"])}" rel="noopener">{shown}</a>')
     elif src.get("project"):
@@ -488,7 +503,8 @@ def render_index(eps, template):
             if ep.get("actions"):
                 links = [action_link(a, CATALOGUE_LABELS.get(a["kind"], a["label"])) for a in
                          sorted(ep["actions"], key=lambda a: not a.get("primary"))]
-                links.append(f'<a class="btn" href="/xel/{ep["slug"]}/" data-track="episode">Watch the episode</a>')
+                links.append(f'<a class="btn" href="/xel/{ep["slug"]}/" data-track="episode">'
+                             f'{"Watch the episode" if ep.get("youtube_id") else "Open the episode"}</a>')
                 # links straight after the title: on a phone they must show on first load
                 extra = (f'{I}      <p class="actions entry-actions">\n'
                          + "\n".join(f"{I}        {x}" for x in links) + f"\n{I}      </p>\n")

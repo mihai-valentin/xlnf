@@ -89,7 +89,7 @@ python3 check-notes.py    must pass before committing
 | `title` | string | required |
 | `date` | `YYYY-MM-DD` | required; list order is newest first |
 | `updated` | `YYYY-MM-DD` | optional; feeds `dateModified` and the sitemap `lastmod` |
-| `kind` | `teaser` \| `digest` \| `explainer` \| `deep-dive` | required |
+| `kind` | `teaser` \| `digest` \| `explainer` \| `deep-dive` \| `report` | required |
 | `duration_seconds` | number \| null | optional |
 | `summary` | string ≤ 200 chars | required; one paragraph; also the meta description |
 | `youtube_id` | 11-char ID \| null | null = poster + "coming soon"; set it and rebuild to embed (youtube-nocookie) |
@@ -97,13 +97,13 @@ python3 check-notes.py    must pass before committing
 | `transcript` | `[{text, claims?: ["C001"]}]` | optional; rendered as "What I said". Per-line `claims` cites are optional, but every cite must resolve, and a non-teaser transcript must cite at least once |
 | `body_html` | HTML string | optional; the write-up, rendered under "Write-up" |
 | `claims` | `[{id, statement, quotes: [..], source}]` | `id` like `C001`; at least one verbatim quote each. **Required (≥ 1) for `digest`, `explainer`, `deep-dive`; optional for `teaser`** |
-| `claims[].source` | `{project, path, lines, commit, url}` | needs `project`+`path`+`commit` (hex), or `url`; `url` null means "private repository, no public link" |
+| `claims[].source` | `{project, path, lines, commit, url}` or `{publisher, title, url, published?, accessed?, quote_link?}` | a repo blob needs `project`+`path`+`commit` (hex), or `url`; `url` null means "private repository, no public link". A web page (`url` + `title`, no `project`) renders as publisher · linked title · published/accessed dates · "quote in context" (`quote_link`, usually a `#:~:text=` link) |
 | `disclosure` | string | required; shown verbatim |
-| `actions` | `[{kind, label, url, primary?}]` | optional; non-empty if present. `kind` `[a-z0-9-]` (`fix`, `guide`, …); `url` https; at most one `primary`. Present = **problem-first layout**: under the title come `applies_to` and these buttons (primary first, dominant, ≥ 44 px tap target), and the summary moves below the Short. On `/xel/` the entry gets direct links too: short labels for `fix` ("Get the fix") and `guide` ("Read the explanation"), `label` otherwise, plus "Watch the episode". Analytics `to` is `github` for github.com URLs, else the action's `kind`. `https://xlnf.dev/...` URLs are rendered root-relative |
+| `actions` | `[{kind, label, url, primary?}]` | optional; non-empty if present. `kind` `[a-z0-9-]` (`fix`, `guide`, …); `url` https; at most one `primary`. Present = **problem-first layout**: under the title come `applies_to` and these buttons (primary first, dominant, ≥ 44 px tap target), and the summary moves below the Short. On `/xel/` the entry gets direct links too: short labels for `fix` ("Get the fix") and `guide` ("Read the explanation"), `label` otherwise, plus "Watch the episode". Analytics `to` is `github` for github.com URLs, else the action's `kind` (e.g. `source`). The catalogue's episode link reads "Open the episode" until `youtube_id` is set. `https://xlnf.dev/...` URLs are rendered root-relative |
 | `applies_to` | string | optional; one sentence, shown under the title (only in the problem-first layout) |
 | `requirements` | `[string]` | optional; rendered as "What you need" at the top of the main column |
 | `limitations` | `[string]` | optional; rendered as "Limitations" after it |
-| `references` | `[{label, url, kind, note?}]` | optional; further reading, **not evidence** — rendered as its own "Related reports and docs" section after "Limitations", never in Sources. `url` https and unique; `kind` `issue` \| `docs` \| `tool` (used only as the `xel_outbound` `to` value, not shown); `note` optional, shown after an em dash |
+| `references` | `[{label, url, kind, note?}]` | optional; further reading, **not evidence** — rendered as its own "Related reports and docs" section after "Limitations", never in Sources. `url` https and unique; `kind` `issue` \| `docs` \| `tool` \| `report` (used only as the `xel_outbound` `to` value, not shown); `note` optional, shown after an em dash |
 | `references_from` | https url | optional, needs `references`; the list's origin, shown as "Listed in the `<repo>` README." (repo name taken from a github.com URL) |
 
 Episodes without `actions` render exactly as before (title, summary, Short, transcript…).
@@ -127,7 +127,7 @@ PostHog EU Cloud, no cookies, tab-scoped storage, autocapture and session record
 | `note_read` | reader reached 75% of a note | `slug`, `title` |
 | `xel_index_view` | `/xel/` opened | `episodes` (count) |
 | `xel_episode_view` | an episode page opened | `slug`, `kind` |
-| `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `youtube` \| `channel` \| `episode` \| `issue` \| `docs` \| `tool` — the last three are reference links), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
+| `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `source` \| `youtube` \| `channel` \| `episode` \| `issue` \| `docs` \| `tool` \| `report` — an action's `kind` for non-GitHub actions; the last four are reference links), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
 | `xel_youtube_click` | an explicit YouTube link clicked: the `/xel/` channel button, an episode's "Watch on YouTube", an episode's channel link. Fired with `xel_outbound` by the same listener; sent immediately by `sendBeacon` so it survives the navigation. Clicks inside the embedded player are not seen (cross-origin iframe); a click is not a view | `destination` (`channel` \| `short`), `placement` (`room_button` \| `episode_watch_link` \| `episode_channel_link`), `episode_slug` (episode pages only) |
 
 `note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.
