@@ -6,7 +6,7 @@
   "kind": "report",
   "duration_seconds": 46.1,
   "summary": "Its web tools only reached an offline cache, yet an agent in OpenAI's training got answers from a public chatbot, through DNS. What OpenAI reported, and the boundary lesson.",
-  "youtube_id": null,
+  "youtube_id": "kNEO0pM_Uyg",
   "poster": "poster.jpg",
   "actions": [
     {
