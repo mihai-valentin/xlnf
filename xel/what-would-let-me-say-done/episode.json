@@ -116,7 +116,7 @@
       "statement": "Section 7.4: the A2A Server, the side that receives the request, \"MUST authenticate every incoming request\".",
       "quotes": [
         "authenticate every incoming request based on the provided credentials and its declared authentication requirements",
-        "**A2A Server (Remote Agent):** An agent or agentic system that exposes an A2A-compliant endpoint, processing tasks and providing responses",
+        "A2A Server (Remote Agent): An agent or agentic system that exposes an A2A-compliant endpoint, processing tasks and providing responses",
         "Once authenticated, the A2A Server authorizes requests based on the authenticated identity and its own policies"
       ],
       "source": {
