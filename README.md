@@ -72,6 +72,8 @@ Write original prose. Do not paste a project's README into a note: two copies of
 
 Every episode page links to its neighbours in catalogue order (newest first, videos or not): a one-line bar under the breadcrumb (`← older · all episodes · newer →`) and a block after Sources with the neighbours' titles and "All N episodes". Links name the episode and never say "watch".
 
+`/xel/` has a search box (`assets/js/xel-search.js`, hidden without JS): it filters the list as you type, matching every word against each entry's `data-search` (title, seo_title, summary, kind, series, applies_to, date and transcript, written by `xel-build.py`). The query is kept in `?q=`; `/` focuses the box, Esc clears it. It sends no analytics.
+
 **Contract with `agent-research-blogger` (`arb page`).** For each episode, write exactly two things into this repo, then run the build:
 
 ```

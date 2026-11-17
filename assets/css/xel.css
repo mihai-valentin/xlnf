@@ -308,6 +308,23 @@ p { margin: 12px 0; }
 .ep-nav-end .newer { text-align: right; }
 .ep-nav-end .all { font-family: var(--font-mono); font-size: 0.86rem; }
 
+/* catalogue search (xel-search.js) */
+.ep-search { margin: 12px 0 4px; }
+.episodes > [hidden], .ep-search[hidden] { display: none; }  /* .episode-card sets display: grid */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ep-search input {
+  width: 100%; max-width: 520px; box-sizing: border-box; min-height: 44px;
+  font-family: var(--font-mono); font-size: 1rem; /* 16px: no iOS zoom on focus */
+  color: var(--ink); background: var(--card); border: 2px solid var(--ink); padding: 8px 12px;
+  box-shadow: 4px 4px 0 var(--shadow);
+}
+:root:not([data-theme="light"]) .ep-search input { border-color: var(--rule); }
+.ep-search input:focus { outline: 3px solid var(--signal); outline-offset: 2px; }
+.ep-search .meta { margin: 8px 0 0; }
+.ep-search .meta:empty { display: none; }  /* no count line until something is typed */
+.linkish { font: inherit; color: var(--signal); background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; }
+
 /* Xel's notes (body_html): Xel's own long-form view, set apart from the sourced material */
 .xel-notes .body { border-left: 3px solid var(--signal); padding-left: 18px; }
 .xel-notes .body h3 { margin: 26px 0 8px; font-size: 1.1rem; }

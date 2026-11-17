@@ -620,6 +620,15 @@ def render_episode(ep, template):
 
 # ----------------------------------------------------------------- landing page
 
+def search_text(ep):
+    """What the catalogue search matches: everything a reader might remember about an episode."""
+    s = ep.get("series") or {}
+    parts = [ep["title"], ep.get("seo_title", ""), ep["summary"], ep["kind"], s.get("name", ""),
+             ep.get("applies_to", ""), ep["date"]]
+    parts += [line["text"] for line in ep.get("transcript") or []]
+    return re.sub(r"\s+", " ", " ".join(p for p in parts if p)).strip().lower()
+
+
 def series_kicker(ep):
     s = ep.get("series")
     return f' <span class="meta series-tag">{esc(s["name"])} · {s["part"]}/{s["of"]}</span>' if s else ""
@@ -641,7 +650,7 @@ def render_index(eps, template):
                 extra = (f'{I}      <p class="actions entry-actions">\n'
                          + "\n".join(f"{I}        {x}" for x in links) + f"\n{I}      </p>\n")
             cards.append(
-                f'{I}  <li class="episode-card" data-slug="{ep["slug"]}">\n'
+                f'{I}  <li class="episode-card" data-slug="{ep["slug"]}" data-search="{esc(search_text(ep))}">\n'
                 f'{I}    <a href="/xel/{ep["slug"]}/" tabindex="-1" aria-hidden="true"><img class="thumb" src="/xel/{ep["slug"]}/{esc(ep["poster"])}" width="120" height="213" alt="" loading="lazy"></a>\n'
                 f"{I}    <div>\n"
                 f'{I}      <p class="kicker"><span class="kind">{ep["kind"]}</span> <span class="meta"><time datetime="{ep["date"]}">{ep["date"]}</time>{" · " + fmt_duration(dur) if dur else ""}</span>'
@@ -651,7 +660,18 @@ def render_index(eps, template):
                 f"{I}    </div>\n"
                 f"{I}  </li>"
             )
-        episodes = f'{I}<ol class="episodes">\n' + "\n".join(cards) + f"\n{I}</ol>"
+        # Search box: hidden until xel-search.js runs, so without JS the plain list is all there is.
+        search = (
+            f'{I}<form class="ep-search" role="search" hidden>\n'
+            f'{I}  <label for="ep-q" class="sr-only">Search episodes</label>\n'
+            f'{I}  <input id="ep-q" name="q" type="search" autocomplete="off" spellcheck="false"'
+            f' placeholder="Search episodes: DNS, WSL, A2A…" aria-describedby="ep-count">\n'
+            f'{I}  <p id="ep-count" class="meta" aria-live="polite"></p>\n'
+            f'{I}</form>\n'
+        )
+        episodes = (search + f'{I}<ol class="episodes">\n' + "\n".join(cards) + f"\n{I}</ol>\n"
+                    f'{I}<p class="empty" id="ep-none" hidden>No episode matches that. '
+                    f'<button type="button" class="linkish" id="ep-clear">Show all episodes</button></p>')
     else:
         episodes = f'{I}<p class="empty">No episodes yet.</p>'
 
