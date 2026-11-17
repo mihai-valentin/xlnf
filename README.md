@@ -70,6 +70,8 @@ Write original prose. Do not paste a project's README into a note: two copies of
 
 `/xel/` is its own collection, not part of notes: different look, video-first, different schema (`Article` + `VideoObject`, under a `CollectionPage`). Its pages are generated, so the registration rule is enforced by construction rather than by memory.
 
+Every episode page links to its neighbours in catalogue order (newest first, videos or not): a one-line bar under the breadcrumb (`← older · all episodes · newer →`) and a block after Sources with the neighbours' titles and "All N episodes". Links name the episode and never say "watch".
+
 **Contract with `agent-research-blogger` (`arb page`).** For each episode, write exactly two things into this repo, then run the build:
 
 ```
@@ -90,7 +92,7 @@ python3 check-notes.py    must pass before committing
 | `date` | `YYYY-MM-DD` | required; list order is newest first |
 | `updated` | `YYYY-MM-DD` | optional; feeds `dateModified` and the sitemap `lastmod` |
 | `kind` | `teaser` \| `digest` \| `explainer` \| `deep-dive` \| `report` \| `essay` | required. `essay` = Xel's own argument around an invented example, with a few sourced lines |
-| `series` | `{name, part, of}` | optional; `1 ≤ part ≤ of`. Shows a "Series" line under the title, "name · part/of" on the catalogue entry, and previous/next links after Sources to the parts that exist. Two episodes with the same name and part, or different `of`, fail the build |
+| `series` | `{name, part, of}` | optional; `1 ≤ part ≤ of`. Shows a "Series" line under the title, "name · part/of" on the catalogue entry, and a "part n of name" tag on a neighbour in the older/newer navigation when it is in the same series. Two episodes with the same name and part, or different `of`, fail the build |
 | `duration_seconds` | number \| null | optional |
 | `summary` | string ≤ 200 chars | required; one paragraph; also the meta description |
 | `youtube_id` | 11-char ID \| null | null = the poster labelled "Video not published yet", no YouTube button, no VideoObject; set it and rebuild to embed (youtube-nocookie) |
@@ -128,7 +130,7 @@ PostHog EU Cloud, no cookies, tab-scoped storage, autocapture and session record
 | `note_read` | reader reached 75% of a note | `slug`, `title` |
 | `xel_index_view` | `/xel/` opened | `episodes` (count) |
 | `xel_episode_view` | an episode page opened | `slug`, `kind` |
-| `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `source` \| `youtube` \| `channel` \| `episode` \| `issue` \| `docs` \| `tool` \| `report` \| `paper` \| `specification` — an action's `kind` for non-GitHub actions; the last six are reference links; series previous/next links are `episode`), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
+| `xel_outbound` | a tracked link on `/xel/` or an episode page clicked (one event per click, one delegated listener) | `to` (`github` \| `guide` \| `source` \| `youtube` \| `channel` \| `episode` \| `issue` \| `docs` \| `tool` \| `report` \| `paper` \| `specification` — an action's `kind` for non-GitHub actions; the last six are reference links; the older/newer/all-episodes navigation links are `episode`), `placement` (`episode` \| `catalogue`), `slug` (the nearest `[data-slug]`: the episode's `<article>` or the catalogue entry's `<li>`; `null` for the catalogue's channel button) |
 | `xel_youtube_click` | an explicit YouTube link clicked: the `/xel/` channel button, an episode's "Watch on YouTube", an episode's channel link. Fired with `xel_outbound` by the same listener; sent immediately by `sendBeacon` so it survives the navigation. Clicks inside the embedded player are not seen (cross-origin iframe); a click is not a view | `destination` (`channel` \| `short`), `placement` (`room_button` \| `episode_watch_link` \| `episode_channel_link`), `episode_slug` (episode pages only) |
 
 `note_view` vs `note_read` is the distinction that matters: a pageview says a search result was clicked, not that anything was read. A note shorter than the viewport counts as read on load, which is correct rather than generous.

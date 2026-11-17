@@ -250,8 +250,12 @@ def load_all():
     for name, by_part in parts.items():
         if len({e["series"]["of"] for e in by_part.values()}) > 1:
             errors.append(f"series '{name}': episodes disagree on 'of'")
-        for n, ep in by_part.items():
-            ep["_prev"], ep["_next"] = by_part.get(n - 1), by_part.get(n + 1)
+    # catalogue neighbours (newest first), for the older/newer navigation on every page
+    for i, ep in enumerate(eps):
+        ep["_newer"] = eps[i - 1] if i > 0 else None
+        ep["_older"] = eps[i + 1] if i + 1 < len(eps) else None
+    for ep in eps:
+        ep["_count"] = len(eps)
     return eps, errors
 
 
@@ -334,6 +338,45 @@ def source_html(src):
     return " · ".join(parts)
 
 
+# ----------------------------------------------------------------- episode navigation
+# Every episode page links to its neighbours in catalogue order (newest first), with
+# or without a video: the links name the episode, never "watch". One bar under the
+# breadcrumb, one block after Sources. A neighbour in the same series says which part.
+
+def nav_top(ep):
+    I = " " * 8
+    def side(key, label):
+        o = ep.get(key)
+        cls = "older" if key == "_older" else "newer"
+        if not o:
+            return f'<span class="{cls}" aria-hidden="true"></span>'
+        return (f'<a class="{cls}" href="/xel/{o["slug"]}/" title="{esc(o["title"])}" '
+                f'data-track="episode">{label}</a>')
+    return (f'{I}<nav class="ep-nav" aria-label="episodes">\n'
+            f'{I}  {side("_older", "← older")}\n'
+            f'{I}  <a class="all" href="/xel/" data-track="episode">all episodes</a>\n'
+            f'{I}  {side("_newer", "newer →")}\n'
+            f'{I}</nav>')
+
+
+def nav_end(ep, S):
+    def same_series(o):
+        a, b = ep.get("series"), o.get("series")
+        return a and b and a["name"] == b["name"]
+    items = []
+    for key, word in (("_older", "Older"), ("_newer", "Newer")):
+        o = ep.get(key)
+        if not o:
+            continue
+        tag = f' · part {o["series"]["part"]} of {esc(o["series"]["name"])}' if same_series(o) else ""
+        items.append(f'{S}  <a class="{key[1:]}" href="/xel/{o["slug"]}/" data-track="episode">'
+                     f'<span class="dir">{"← " if key == "_older" else ""}{word}{tag}{" →" if key == "_newer" else ""}</span>'
+                     f' <span class="t">{esc(o["title"])}</span></a>')
+    items.append(f'{S}  <a class="all" href="/xel/" data-track="episode">All {ep["_count"]} episodes</a>')
+    return (f'{S}<nav class="ep-nav-end" aria-label="more episodes">\n'
+            + "\n".join(items) + f"\n{S}</nav>\n")
+
+
 # ----------------------------------------------------------------- episode page
 
 def render_episode(ep, template):
@@ -371,7 +414,8 @@ def render_episode(ep, template):
     )
     J = " " * 14
     # The watch button lives only under the Short; the end-of-page links don't repeat it.
-    links = "\n".join(J + x for x in (channel, '<a class="btn" href="/xel/">← Xel\'s room</a>'))
+    # "All episodes" lives in the end navigation just above, so the foot keeps only the channel.
+    links = J + channel
     if watch:
         video += f'\n{I}<div class="actions">\n{I}  {watch}\n{I}</div>'
 
@@ -499,21 +543,11 @@ def render_episode(ep, template):
         fit_section += (f'{S}<section aria-labelledby="references">\n{S}<h2 id="references">Related reports and docs</h2>\n'
                         f'{origin}{S}<ul class="refs">\n' + "\n".join(items) + f"\n{S}</ul>\n{S}</section>\n")
 
-    series_line, series_nav = "", ""
+    series_line = ""
     if ep.get("series"):
         sr = ep["series"]
         series_line = (f'\n{H}<p class="series"><span class="label">Series</span> '
                        f'{esc(sr["name"])} · part {sr["part"]} of {sr["of"]}</p>')
-        nav = []
-        for rel_, arrow, key in (("prev", "←", "_prev"), ("next", "→", "_next")):
-            other = ep.get(key)
-            if other:
-                text = f'Part {other["series"]["part"]}: {esc(other["title"])}'
-                nav.append(f'{S}  <a class="series-{rel_}" rel="{rel_}" href="/xel/{other["slug"]}/" data-track="episode">'
-                           + (f'{arrow} {text}' if rel_ == "prev" else f'{text} {arrow}') + '</a>')
-        if nav:
-            series_nav = (f'{S}<nav class="series-nav" aria-label="{esc(sr["name"])}: other parts">\n'
-                          + "\n".join(nav) + f"\n{S}</nav>\n")
         article["isPartOf"] = [article["isPartOf"],
                                {"@type": "CreativeWorkSeries", "name": sr["name"]}]
         article["position"] = sr["part"]
@@ -535,7 +569,9 @@ def render_episode(ep, template):
         "video": video,
         "transcript_section": transcript_section,
         "body_section": body_section,
-        "claims_section": claims_section + ("\n" + series_nav if series_nav else ""),
+        "claims_section": claims_section,
+        "nav_top": nav_top(ep),
+        "nav_end": nav_end(ep, S),
         "disclosure": esc(ep["disclosure"]),
         "links": links,
     }

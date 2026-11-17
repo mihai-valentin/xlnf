@@ -287,14 +287,26 @@ p { margin: 12px 0; }
 .entry-actions { margin: 10px 0 0; gap: 10px; }
 .entry-actions .btn { font-size: 0.8rem; padding: 8px 12px; }
 
-/* series ("series" in episode.json): a line under the kicker, prev/next after Sources */
+/* series ("series" in episode.json): a line under the title, a tag on the catalogue entry */
 .series { margin: 10px 0 0; font-family: var(--font-mono); font-size: 0.86rem; }
 .series .label { margin-right: 8px; }
 .series-tag { margin-left: 6px; }
-.series-nav { display: grid; gap: 10px; margin: 34px 0 0; padding-top: 16px; border-top: 2px solid var(--rule); }
-.series-nav a { font-family: var(--font-mono); font-size: 0.88rem; text-decoration: none; }
-.series-nav a:hover { text-decoration: underline; text-decoration-color: var(--signal); }
-.series-nav .series-next { text-align: right; }
+
+/* episode navigation: catalogue order, a bar under the breadcrumb and a block after Sources */
+.ep-nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;
+  margin: -6px 0 22px; font-family: var(--font-mono); font-size: 0.84rem; }
+.ep-nav a { text-decoration: none; padding: 10px 0; }  /* 44 px tap height with the line */
+.ep-nav a:hover { text-decoration: underline; text-decoration-color: var(--signal); }
+.ep-nav .newer { text-align: right; }
+.ep-nav .all { text-align: center; color: var(--graphite); }
+.ep-nav-end { display: grid; gap: 14px; margin: 40px 0 0; padding-top: 18px; border-top: 2px solid var(--rule); }
+.ep-nav-end a { text-decoration: none; display: block; }
+.ep-nav-end .dir { display: block; font-family: var(--font-mono); font-size: 0.78rem; color: var(--graphite);
+  letter-spacing: 0.06em; text-transform: uppercase; }
+.ep-nav-end .t { font-weight: 600; }
+.ep-nav-end a:hover .t { text-decoration: underline; text-decoration-color: var(--signal); }
+.ep-nav-end .newer { text-align: right; }
+.ep-nav-end .all { font-family: var(--font-mono); font-size: 0.86rem; }
 
 /* Xel's notes (body_html): Xel's own long-form view, set apart from the sourced material */
 .xel-notes .body { border-left: 3px solid var(--signal); padding-left: 18px; }
