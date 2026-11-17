@@ -38,7 +38,7 @@ BASE = "https://xlnf.dev"
 # Xel's YouTube channel. Change it here, then rebuild.
 CHANNEL_URL = "https://www.youtube.com/@xelxlnf"
 
-KINDS = ("teaser", "digest", "explainer", "deep-dive", "report")
+KINDS = ("teaser", "digest", "explainer", "deep-dive", "report", "essay")
 # Teasers carry no facts, so they render no Sources section and no claim chips.
 # Every other kind must cite at least one sourced claim.
 SOURCELESS_KINDS = ("teaser",)
@@ -48,7 +48,11 @@ CLAIM_ID_RE = re.compile(r"^[A-Z]+[0-9]+$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SLOT_RE = re.compile(r"\{\{([a-z_]+)\}\}")
 ACTION_KIND_RE = re.compile(r"^[a-z][a-z0-9-]*$")
-REFERENCE_KINDS = ("issue", "docs", "tool", "report")
+REFERENCE_KINDS = ("issue", "docs", "tool", "report", "paper", "specification")
+# body_html is pasted into the page as-is, so it may only use these tags, with no attributes.
+BODY_TAGS = {"p", "h3", "h4", "strong", "em", "ul", "ol", "li", "blockquote", "code"}
+# Kinds whose limitations are about the evidence or the argument, not a piece of software.
+LIMITS_HEADING = {"report": "Limits", "essay": "Limits"}
 # Short labels for an episode's actions on the /xel/ catalogue entry (the episode
 # page shows the full `label` from episode.json). Unknown kinds fall back to `label`.
 CATALOGUE_LABELS = {"fix": "Get the fix", "guide": "Read the explanation"}
@@ -112,6 +116,16 @@ def load_episode(slug):
     need("disclosure")
     if not isinstance(ep.get("body_html", ""), str):
         raise EpisodeError(f"{rel}: 'body_html' must be a string (may be empty)")
+    for m in re.finditer(r"<(/?)([a-zA-Z0-9]*)([^>]*)>", ep.get("body_html", "")):
+        if m.group(2).lower() not in BODY_TAGS or m.group(3).strip():
+            raise EpisodeError(f"{rel}: body_html may only use <{'>, <'.join(sorted(BODY_TAGS))}> "
+                               f"without attributes; found {m.group(0)!r}")
+    series = ep.get("series")
+    if series is not None:
+        if not (isinstance(series, dict) and isinstance(series.get("name"), str) and series["name"].strip()
+                and isinstance(series.get("part"), int) and isinstance(series.get("of"), int)
+                and 1 <= series["part"] <= series["of"]):
+            raise EpisodeError(f"{rel}: 'series' must be {{name, part, of}} with 1 ≤ part ≤ of, or absent")
 
     actions = ep.get("actions")
     if actions is not None:
@@ -223,6 +237,21 @@ def load_all():
     # newest first; same-day ties broken by slug for a stable order
     eps.sort(key=lambda e: e["slug"])
     eps.sort(key=lambda e: e["date"], reverse=True)
+    # a series part may be missing (not published yet), but never doubled or with a different length
+    parts = {}
+    for ep in eps:
+        s = ep.get("series")
+        if s:
+            parts.setdefault(s["name"], {})
+            if s["part"] in parts[s["name"]]:
+                errors.append(f"xel/{ep['slug']}: series '{s['name']}' part {s['part']} is also "
+                              f"xel/{parts[s['name']][s['part']]['slug']}")
+            parts[s["name"]][s["part"]] = ep
+    for name, by_part in parts.items():
+        if len({e["series"]["of"] for e in by_part.values()}) > 1:
+            errors.append(f"series '{name}': episodes disagree on 'of'")
+        for n, ep in by_part.items():
+            ep["_prev"], ep["_next"] = by_part.get(n - 1), by_part.get(n + 1)
     return eps, errors
 
 
@@ -327,13 +356,14 @@ def render_episode(ep, template):
         video = (
             f'{I}<div class="frame916" data-video="pending">\n'
             f'{I}  <img src="/xel/{slug}/{esc(ep["poster"])}" width="720" height="1280" alt="Poster for the Short: {esc(title)}">\n'
-            f'{I}  <span class="soon">Short coming soon</span>\n'
+            f'{I}  <span class="soon">Video not published yet</span>\n'
             f'{I}</div>'
         )
 
+    # No video yet: the poster only, no button and no promise of when.
     watch = (
         f'<a class="btn primary" href="https://www.youtube.com/shorts/{yt}" data-track="youtube" rel="noopener">▶ Watch on YouTube</a>'
-        if yt else '<span class="btn pending" aria-disabled="true">▶ On YouTube soon</span>'
+        if yt else ""
     )
     channel = (
         f'<a class="btn" href="{esc(CHANNEL_URL)}" data-track="channel" rel="noopener">Xel on YouTube</a>'
@@ -342,7 +372,8 @@ def render_episode(ep, template):
     J = " " * 14
     # The watch button lives only under the Short; the end-of-page links don't repeat it.
     links = "\n".join(J + x for x in (channel, '<a class="btn" href="/xel/">← Xel\'s room</a>'))
-    video += f'\n{I}<div class="actions">\n{I}  {watch}\n{I}</div>'
+    if watch:
+        video += f'\n{I}<div class="actions">\n{I}  {watch}\n{I}</div>'
 
     S = " " * 12
     transcript_section = ""
@@ -364,7 +395,8 @@ def render_episode(ep, template):
     body_section = ""
     if (ep.get("body_html") or "").strip():
         body_section = (
-            f'{S}<section aria-labelledby="writeup">\n{S}<h2 id="writeup">Write-up</h2>\n'
+            f'{S}<section class="xel-notes" aria-labelledby="writeup">\n{S}<h2 id="writeup">Xel\'s notes</h2>\n'
+            f'{S}<p class="meta">The longer version, in Xel\'s own words: its view, not a source.</p>\n'
             f'{S}<div class="body">\n{ep["body_html"].strip()}\n{S}</div>\n{S}</section>'
         )
 
@@ -443,7 +475,8 @@ def render_episode(ep, template):
         main_summary = ""
 
     fit_section = ""
-    blocks = [(k, h) for k, h in (("requirements", "What you need"), ("limitations", "Limitations")) if ep.get(k)]
+    limits = LIMITS_HEADING.get(ep["kind"], "Limitations")
+    blocks = [(k, h) for k, h in (("requirements", "What you need"), ("limitations", limits)) if ep.get(k)]
     if blocks:
         parts = []
         for key, heading in blocks:
@@ -466,6 +499,25 @@ def render_episode(ep, template):
         fit_section += (f'{S}<section aria-labelledby="references">\n{S}<h2 id="references">Related reports and docs</h2>\n'
                         f'{origin}{S}<ul class="refs">\n' + "\n".join(items) + f"\n{S}</ul>\n{S}</section>\n")
 
+    series_line, series_nav = "", ""
+    if ep.get("series"):
+        sr = ep["series"]
+        series_line = (f'\n{H}<p class="series"><span class="label">Series</span> '
+                       f'{esc(sr["name"])} · part {sr["part"]} of {sr["of"]}</p>')
+        nav = []
+        for rel_, arrow, key in (("prev", "←", "_prev"), ("next", "→", "_next")):
+            other = ep.get(key)
+            if other:
+                text = f'Part {other["series"]["part"]}: {esc(other["title"])}'
+                nav.append(f'{S}  <a class="series-{rel_}" rel="{rel_}" href="/xel/{other["slug"]}/" data-track="episode">'
+                           + (f'{arrow} {text}' if rel_ == "prev" else f'{text} {arrow}') + '</a>')
+        if nav:
+            series_nav = (f'{S}<nav class="series-nav" aria-label="{esc(sr["name"])}: other parts">\n'
+                          + "\n".join(nav) + f"\n{S}</nav>\n")
+        article["isPartOf"] = [article["isPartOf"],
+                               {"@type": "CreativeWorkSeries", "name": sr["name"]}]
+        article["position"] = sr["part"]
+
     dur = ep.get("duration_seconds")
     slots = {
         "title": esc(title),
@@ -475,7 +527,7 @@ def render_episode(ep, template):
         "date": ep["date"],
         "kind": ep["kind"],
         "slug": slug,
-        "lead": lead,
+        "lead": series_line + lead,
         "main_top": main_summary + fit_section,
         "duration_meta": f" · {fmt_duration(dur)}" if dur else "",
         "jsonld_article": jsonld(article),
@@ -483,7 +535,7 @@ def render_episode(ep, template):
         "video": video,
         "transcript_section": transcript_section,
         "body_section": body_section,
-        "claims_section": claims_section,
+        "claims_section": claims_section + ("\n" + series_nav if series_nav else ""),
         "disclosure": esc(ep["disclosure"]),
         "links": links,
     }
@@ -492,6 +544,11 @@ def render_episode(ep, template):
 
 
 # ----------------------------------------------------------------- landing page
+
+def series_kicker(ep):
+    s = ep.get("series")
+    return f' <span class="meta series-tag">{esc(s["name"])} · {s["part"]}/{s["of"]}</span>' if s else ""
+
 
 def render_index(eps, template):
     I = " " * 6
@@ -512,7 +569,8 @@ def render_index(eps, template):
                 f'{I}  <li class="episode-card" data-slug="{ep["slug"]}">\n'
                 f'{I}    <a href="/xel/{ep["slug"]}/" tabindex="-1" aria-hidden="true"><img class="thumb" src="/xel/{ep["slug"]}/{esc(ep["poster"])}" width="120" height="213" alt="" loading="lazy"></a>\n'
                 f"{I}    <div>\n"
-                f'{I}      <p class="kicker"><span class="kind">{ep["kind"]}</span> <span class="meta"><time datetime="{ep["date"]}">{ep["date"]}</time>{" · " + fmt_duration(dur) if dur else ""}</span></p>\n'
+                f'{I}      <p class="kicker"><span class="kind">{ep["kind"]}</span> <span class="meta"><time datetime="{ep["date"]}">{ep["date"]}</time>{" · " + fmt_duration(dur) if dur else ""}</span>'
+                f'{series_kicker(ep)}</p>\n'
                 f'{I}      <h3><a href="/xel/{ep["slug"]}/">{esc(ep["title"])}</a></h3>\n'
                 f'{extra}{I}      <p>{esc(ep["summary"])}</p>\n'
                 f"{I}    </div>\n"

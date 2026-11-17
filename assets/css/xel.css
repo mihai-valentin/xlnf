@@ -287,6 +287,19 @@ p { margin: 12px 0; }
 .entry-actions { margin: 10px 0 0; gap: 10px; }
 .entry-actions .btn { font-size: 0.8rem; padding: 8px 12px; }
 
+/* series ("series" in episode.json): a line under the kicker, prev/next after Sources */
+.series { margin: 10px 0 0; font-family: var(--font-mono); font-size: 0.86rem; }
+.series .label { margin-right: 8px; }
+.series-tag { margin-left: 6px; }
+.series-nav { display: grid; gap: 10px; margin: 34px 0 0; padding-top: 16px; border-top: 2px solid var(--rule); }
+.series-nav a { font-family: var(--font-mono); font-size: 0.88rem; text-decoration: none; }
+.series-nav a:hover { text-decoration: underline; text-decoration-color: var(--signal); }
+.series-nav .series-next { text-align: right; }
+
+/* Xel's notes (body_html): Xel's own long-form view, set apart from the sourced material */
+.xel-notes .body { border-left: 3px solid var(--signal); padding-left: 18px; }
+.xel-notes .body h3 { margin: 26px 0 8px; font-size: 1.1rem; }
+
 @media (prefers-reduced-motion: reduce) {
   header.site-header .prompt .cursor { animation: none; }
   .btn:hover { transform: none; }

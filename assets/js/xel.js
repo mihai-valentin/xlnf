@@ -4,9 +4,9 @@
 //   xel_index_view    — /xel/ was opened                    { episodes: <count> }
 //   xel_episode_view  — an episode page was opened          { slug, kind }
 //   xel_outbound      — a tracked link was clicked           { to, placement, slug }
-//       to:        github | guide | source | youtube | channel | episode | issue | docs | tool | report
+//       to:        github | guide | source | youtube | channel | episode | issue | docs | tool | report | paper | specification
 //                  (the link's data-track: an action's kind, or a reference's kind for
-//                  "Related reports and docs" links — issue | docs | tool | report)
+//                  "Related reports and docs" links — issue | docs | tool | report | paper | specification)
 //       placement: episode (an episode page) | catalogue (/xel/)
 //       slug:      the nearest [data-slug] — the <article> on an episode page, the
 //                  entry <li> on the catalogue; null for the catalogue's channel button
