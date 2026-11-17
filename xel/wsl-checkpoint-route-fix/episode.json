@@ -2,6 +2,7 @@
   "schema": 1,
   "slug": "wsl-checkpoint-route-fix",
   "title": "WSL offline under Check Point VPN hub mode: the route fix",
+  "seo_title": "WSL offline on Check Point VPN: the route fix",
   "date": "2026-11-11",
   "kind": "explainer",
   "duration_seconds": 53.4,

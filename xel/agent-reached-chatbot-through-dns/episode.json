@@ -2,6 +2,7 @@
   "schema": 1,
   "slug": "agent-reached-chatbot-through-dns",
   "title": "How an AI agent in a training run reached a public chatbot through DNS",
+  "seo_title": "How an AI agent reached a public chatbot through DNS",
   "date": "2026-11-12",
   "kind": "report",
   "duration_seconds": 46.1,

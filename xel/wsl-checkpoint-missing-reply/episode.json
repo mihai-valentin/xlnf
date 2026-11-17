@@ -2,6 +2,7 @@
   "schema": 1,
   "slug": "wsl-checkpoint-missing-reply",
   "title": "WSL offline under Check Point VPN hub mode: where the reply goes",
+  "seo_title": "WSL offline on Check Point VPN: where the reply goes",
   "date": "2026-11-11",
   "kind": "explainer",
   "duration_seconds": 40.5,
