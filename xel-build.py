@@ -30,6 +30,7 @@ import html
 import json
 import os
 import re
+import struct
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -60,6 +61,30 @@ CATALOGUE_LABELS = {"fix": "Get the fix", "guide": "Read the explanation"}
 
 class EpisodeError(Exception):
     pass
+
+
+def jpeg_size(p):
+    """(width, height) of a baseline or progressive JPEG, from its SOF marker."""
+    with open(p, "rb") as f:
+        d = f.read()
+    i = 2
+    while i + 9 < len(d):
+        if d[i] != 0xFF:
+            i += 1
+            continue
+        m = d[i + 1]
+        if m in (0xC0, 0xC1, 0xC2):
+            h, w = struct.unpack(">HH", d[i + 5:i + 9])
+            return w, h
+        if m in (0xD8, 0x01) or 0xD0 <= m <= 0xD7:
+            i += 2
+            continue
+        i += 2 + struct.unpack(">H", d[i + 2:i + 4])[0]
+    raise EpisodeError(f"{p}: not a readable JPEG")
+
+
+# Google shows about 60 characters of a <title>; " · Xel" is appended to seo_title.
+SEO_TITLE_MAX = 54
 
 
 def esc(s):
@@ -95,6 +120,9 @@ def load_episode(slug):
     if need("slug") != slug:
         raise EpisodeError(f"{rel}: slug '{ep['slug']}' does not match its directory '{slug}'")
     need("title")
+    st = ep.get("seo_title")
+    if st is not None and not (isinstance(st, str) and st.strip() and len(st) <= SEO_TITLE_MAX):
+        raise EpisodeError(f"{rel}: 'seo_title' must be a non-empty string of ≤ {SEO_TITLE_MAX} chars, or absent")
     if not DATE_RE.match(need("date")):
         raise EpisodeError(f"{rel}: 'date' must be YYYY-MM-DD")
     if ep.get("updated") is not None and not DATE_RE.match(str(ep["updated"])):
@@ -113,6 +141,9 @@ def load_episode(slug):
     poster = need("poster")
     if "/" in poster or not os.path.isfile(path("xel", slug, poster)):
         raise EpisodeError(f"{rel}: poster '{poster}' must be a file inside xel/{slug}/")
+    if not poster.lower().endswith((".jpg", ".jpeg")):
+        raise EpisodeError(f"{rel}: poster must be a JPEG")
+    ep["_poster_size"] = jpeg_size(path("xel", slug, poster))
     need("disclosure")
     if not isinstance(ep.get("body_html", ""), str):
         raise EpisodeError(f"{rel}: 'body_html' must be a string (may be empty)")
@@ -383,7 +414,9 @@ def render_episode(ep, template):
     slug, yt = ep["slug"], ep.get("youtube_id")
     canonical = url_for(ep)
     poster_abs = f"{BASE}/xel/{slug}/{ep['poster']}"
+    pw, ph = ep["_poster_size"]
     title = ep["title"]
+    poster_alt = f"Poster for the Short: {title}"
     I = " " * 14  # indentation inside <figure>
 
     if yt:
@@ -398,7 +431,7 @@ def render_episode(ep, template):
     else:
         video = (
             f'{I}<div class="frame916" data-video="pending">\n'
-            f'{I}  <img src="/xel/{slug}/{esc(ep["poster"])}" width="720" height="1280" alt="Poster for the Short: {esc(title)}">\n'
+            f'{I}  <img src="/xel/{slug}/{esc(ep["poster"])}" width="{pw}" height="{ph}" alt="{esc(poster_alt)}">\n'
             f'{I}  <span class="soon">Video not published yet</span>\n'
             f'{I}</div>'
         )
@@ -473,7 +506,7 @@ def render_episode(ep, template):
         "inLanguage": "en",
         "url": canonical,
         "mainEntityOfPage": canonical,
-        "image": poster_abs,
+        "image": {"@type": "ImageObject", "url": poster_abs, "width": pw, "height": ph},
         "genre": ep["kind"],
         "author": {"@type": "Organization", "name": "XLNF", "url": f"{BASE}/"},
         "publisher": {"@type": "Organization", "name": "XLNF", "url": f"{BASE}/"},
@@ -555,6 +588,12 @@ def render_episode(ep, template):
     dur = ep.get("duration_seconds")
     slots = {
         "title": esc(title),
+        "page_title": esc(f'{ep["seo_title"]} · Xel' if ep.get("seo_title") else f"{title} · Xel · XLNF"),
+        "poster_w": str(pw),
+        "poster_h": str(ph),
+        "poster_alt": esc(poster_alt),
+        "modified_meta": (f'\n  <meta property="article:modified_time" content="{ep["updated"]}">'
+                          if ep.get("updated") else ""),
         "description": esc(ep["summary"]),
         "canonical": canonical,
         "poster_abs": poster_abs,

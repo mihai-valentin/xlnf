@@ -89,6 +89,7 @@ python3 check-notes.py    must pass before committing
 | `schema` | `1` | required |
 | `slug` | string | required; must equal the directory name; `[a-z0-9-]` |
 | `title` | string | required |
+| `seo_title` | string ≤ 54 chars | optional; the search-result `<title>` (rendered "seo_title · Xel"). Without it the `<title>` is "title · Xel · XLNF", which Google cuts at about 60 characters. `og:title`, the `<h1>` and the JSON-LD headline always use `title` |
 | `date` | `YYYY-MM-DD` | required; list order is newest first |
 | `updated` | `YYYY-MM-DD` | optional; feeds `dateModified` and the sitemap `lastmod` |
 | `kind` | `teaser` \| `digest` \| `explainer` \| `deep-dive` \| `report` \| `essay` | required. `essay` = Xel's own argument around an invented example, with a few sourced lines |
@@ -96,7 +97,7 @@ python3 check-notes.py    must pass before committing
 | `duration_seconds` | number \| null | optional |
 | `summary` | string ≤ 200 chars | required; one paragraph; also the meta description |
 | `youtube_id` | 11-char ID \| null | null = the poster labelled "Video not published yet", no YouTube button, no VideoObject; set it and rebuild to embed (youtube-nocookie) |
-| `poster` | filename | required; must exist in `xel/<slug>/` |
+| `poster` | filename | required; a JPEG in `xel/<slug>/`. Its real size is read at build time for `og:image:width/height`, the JSON-LD `ImageObject` and the `<img>` attributes |
 | `transcript` | `[{text, claims?: ["C001"]}]` | optional; rendered as "What I said". Per-line `claims` cites are optional, but every cite must resolve, and a non-teaser transcript must cite at least once |
 | `body_html` | HTML string | optional; Xel's long-form view, rendered as "Xel's notes" between the transcript and Sources. Only `p h3 h4 strong em ul ol li blockquote code`, no attributes (the build rejects anything else) |
 | `claims` | `[{id, statement, quotes: [..], source}]` | `id` like `C001`; at least one verbatim quote each. **Required (≥ 1) for `digest`, `explainer`, `deep-dive`; optional for `teaser`** |
